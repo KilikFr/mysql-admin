@@ -1,0 +1,99 @@
+App\Entity\Server:
+  server_alpha1:
+    name: alpha1
+    uuid: 'de7a8695-18df-4c66-8001-7a801b266d77'
+    cluster: '@cluster_alpha'
+    host: localhost
+    port: 10001
+    user: root
+    password: test
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  server_alpha2:
+    name: alpha2
+    uuid: '7c6712f3-187c-4714-86e4-ff81893a51c4'
+    cluster: '@cluster_alpha'
+    host: localhost
+    port: 10002
+    user: root
+    password: test
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  server_backup_alpha:
+    name: backup_alpha
+    uuid: 'f1a9705d-0d68-46a9-9291-5218ae0592e0'
+    cluster: null
+    host: localhost
+    port: 20001
+    user: root
+    password: test
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  server_bravo1:
+    name: bravo1
+    uuid: '8be1eba2-bd45-46a4-be5f-5b3d38361ae1'
+    cluster: '@cluster_bravo'
+    host: localhost
+    port: 10003
+    user: root
+    password: test
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  server_bravo2:
+    name: bravo2
+    uuid: 'd87e5a66-bd64-4914-97c8-6f7dfd382589'
+    cluster: '@cluster_bravo'
+    host: localhost
+    port: 10004
+    user: root
+    password: test
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  server_delta1:
+    name: delta1
+    uuid: '6b303f89-44e0-4115-985f-0aa78aefeb06'
+    cluster: '@cluster_delta'
+    host: localhost
+    port: 10005
+    user: root
+    password: test
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  server_delta2:
+    name: delta2
+    uuid: '2287c2ca-03f2-4d20-9d97-05b3a453f17d'
+    cluster: '@cluster_delta'
+    host: localhost
+    port: 10006
+    user: root
+    password: test
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  server_delta3:
+    name: delta3
+    uuid: 'bd490508-177d-465a-a6df-9b8313dac9c8'
+    cluster: '@cluster_delta'
+    host: localhost
+    port: 10007
+    user: root
+    password: test
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  server_delta4:
+    name: delta4
+    uuid: '73b64072-e0d2-403d-865c-a0af90e1a960'
+    cluster: '@cluster_delta'
+    host: localhost
+    port: 10008
+    user: root
+    password: test
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"

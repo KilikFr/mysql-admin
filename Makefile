@@ -142,6 +142,7 @@ upgrade: pull up wait internal_update
 
 ## composer + upgrade (migrations,...)
 internal_update:
+	echo "WIP"
 # 	$(COMPOSE_PHP_CMD) composer install
 # 	$(COMPOSE_PHP_CMD) ./bin/console doctrine:migrations:migrate -n
 
