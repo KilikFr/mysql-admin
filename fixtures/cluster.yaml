@@ -13,3 +13,8 @@ App\Entity\Cluster:
     name: delta
     created_at: "<dateTimeBetween('-13 months','yesterday')>"
     updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  cluster_demo:
+    name: demo
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"

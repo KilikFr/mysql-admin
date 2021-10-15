@@ -14,6 +14,7 @@ services:
     networks:
       - php
       - mysql
+      - cluster-demo
     environment:
       SERVICE: php
 
@@ -67,6 +68,9 @@ networks:
   webproxy:
     external:
       name: ${PROXY_NETWORK:-webproxy}
+  cluster-demo:
+    external:
+      name: cluster-demo_mysql
 
 volumes:
   mysql-data:
