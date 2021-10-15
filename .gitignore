@@ -1,0 +1,15 @@
+/.env
+/*.env
+/docker-compose.yml
+/.idea
+/public/bundles/
+/var/
+/vendor/
+/.php_cs
+/.php_cs.cache
+/.phpcs-cache
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
