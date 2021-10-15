@@ -1,0 +1,15 @@
+App\Entity\Cluster:
+  cluster_alpha:
+    name: alpha
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  cluster_bravo:
+    name: bravo
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  cluster_delta:
+    name: delta
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"

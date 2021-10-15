@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Cluster;
+use App\Entity\Server;
+use App\Entity\Slave;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,7 +16,12 @@ class DefaultController extends AbstractController
      */
     public function index(): Response
     {
-        return $this->render('default/index.html.twig', []);
+        $data=[
+            'clustersCount'=>$this->getDoctrine()->getRepository(Cluster::class)->count([]),
+            'serversCount'=>$this->getDoctrine()->getRepository(Server::class)->count([]),
+            'channelsCount'=>$this->getDoctrine()->getRepository(Slave::class)->count([]),
+        ];
+        return $this->render('default/index.html.twig', $data);
     }
 
     /**

@@ -1,0 +1,122 @@
+App\Entity\Slave:
+
+  # alpha1
+  slave_alpha1_61:
+    server: '@server_alpha1'
+    channel_number: 61
+    description: 'external link from server 61'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  slave_alpha1_62:
+    server: '@server_alpha1'
+    channel_number: 62
+    description: 'external link from server 62'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  slave_alpha1_2:
+    server: '@server_alpha1'
+    channel_number: 2
+    master: '@server_alpha2'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  # alpha2
+  slave_alpha2_61:
+    server: '@server_alpha2'
+    channel_number: 61
+    description: 'external link from server 61'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  slave_alpha2_62:
+    server: '@server_alpha2'
+    channel_number: 62
+    description: 'external link from server 62'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  slave_alpha2_1:
+    server: '@server_alpha2'
+    channel_number: 1
+    master: '@server_alpha1'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  # backup_alpha
+  slave_backup_alpha_1:
+    server: '@server_backup_alpha'
+    channel_number: 1
+    master: '@server_alpha1'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  slave_backup_alpha_2:
+    server: '@server_backup_alpha'
+    channel_number: 2
+    master: '@server_alpha2'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  # bravo1
+  slave_bravo1_2:
+    server: '@server_bravo1'
+    channel_number: 2
+    master: '@server_bravo2'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  # bravo2
+  slave_bravo2_1:
+    server: '@server_bravo2'
+    channel_number: 1
+    master: '@server_bravo1'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  # delta1
+  slave_delta1_2:
+    server: '@server_delta1'
+    channel_number: 2
+    master: '@server_delta2'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  # delta2
+  slave_delta2_1:
+    server: '@server_delta2'
+    channel_number: 1
+    master: '@server_delta1'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  # delta3
+  slave_delta3_1:
+    server: '@server_delta3'
+    channel_number: 1
+    master: '@server_delta1'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  slave_delta3_2:
+    server: '@server_delta3'
+    channel_number: 2
+    master: '@server_delta2'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  # delta4
+  slave_delta4_1:
+    server: '@server_delta4'
+    channel_number: 1
+    master: '@server_delta1'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
+
+  slave_delta4_2:
+    server: '@server_delta4'
+    channel_number: 2
+    master: '@server_delta2'
+    created_at: "<dateTimeBetween('-13 months','yesterday')>"
+    updated_at: "<dateTimeBetween($created_at,'today')>"
