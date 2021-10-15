@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Repository\ServerRepository;
+use App\Services\ServerService;
 use App\Services\SlaveService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Console\Command\Command;
@@ -13,18 +14,18 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class SlaveScanCommand extends Command
+class ScanCommand extends Command
 {
-    protected static $defaultName = 'app:slave:scan';
-    protected static $defaultDescription = 'Scan slave(s) status';
+    protected static $defaultName = 'app:scan';
+    protected static $defaultDescription = 'Scan servers(s) status';
 
-    private SlaveService $slaveService;
+    private ServerService $serverService;
     private ServerRepository $serverRepository;
 
-    public function __construct(SlaveService $slaveService, ServerRepository $serverRepository)
+    public function __construct(ServerService $serverService, ServerRepository $serverRepository)
     {
         parent::__construct();
-        $this->slaveService = $slaveService;
+        $this->serverService = $serverService;
         $this->serverRepository = $serverRepository;
     }
 
@@ -76,27 +77,20 @@ class SlaveScanCommand extends Command
         }
 
         $progress = new ProgressBar($output, count($serversToScan));
+        $progress->display();
 
         foreach ($serversToScan as $server) {
             try {
-                $slaveStatuses = $this->slaveService->showSlaveStatus($server);
-                foreach ($slaveStatuses as $slaveStatus) {
-                    $io->writeln(
-                        sprintf(
-                            'channel %s: %d %d',
-                            $slaveStatus->getChannelName(),
-                            $slaveStatus->getSlaveIoRunning(),
-                            $slaveStatus->getSlaveSqlRunning()
-                        )
-                    );
-                }
+                $this->serverService->scan($server);
+                $progress->advance();
             } catch (\Exception $e) {
                 $io->error(sprintf('error scanning %s: %s', $server->getName(), $e->getMessage()));
             }
         }
+        $progress->display();
 
-
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $io->writeln('');
+        $io->success('scan done.');
 
         return Command::SUCCESS;
     }

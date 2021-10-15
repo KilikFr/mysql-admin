@@ -32,7 +32,7 @@ class ConnectionService
             return $this->connectionPool[$server->getId()];
         } catch (\PDOException $e) {
             throw new \Exception(
-                sprintf('connection error to server %s: %s'.$server->getName(), $e->getMessage()),
+                sprintf('connection error to server %s: %s', $server->getName(), $e->getMessage()),
                 $e->getCode()
             );
         }
