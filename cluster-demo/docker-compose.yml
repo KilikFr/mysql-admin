@@ -1,0 +1,70 @@
+version: '3.5'
+
+services:
+
+  mysql1:
+    image: ${MYSQL_REGISTRY:-mysql}:${MYSQL_TAG:-5.7}
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: symfony
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: test
+    command: ["mysqld",
+              "--auto-increment-offset=1",
+              "--server-id=1",
+             ]
+    volumes:
+      - ./conf.d:/etc/mysql/conf.d
+    hostname: mysql1
+    networks:
+      - mysql
+
+  mysql2:
+    image: ${MYSQL_REGISTRY:-mysql}:${MYSQL_TAG:-5.7}
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: symfony
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: test
+    command: ["mysqld",
+              "--auto-increment-offset=2",
+              "--server-id=2",
+    ]
+    volumes:
+      - ./conf.d:/etc/mysql/conf.d
+    hostname: mysql2
+    networks:
+      - mysql
+
+  mysql3:
+    image: ${MYSQL_REGISTRY:-mysql}:${MYSQL_TAG:-5.7}
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: symfony
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: test
+    command: ["mysqld",
+              "--auto-increment-offset=3",
+              "--server-id=3",
+    ]
+    volumes:
+      - ./conf.d:/etc/mysql/conf.d
+    hostname: mysql3
+    networks:
+      - mysql
+
+  pma:
+    image: ${PMA_REGISTRY:-phpmyadmin/phpmyadmin}:${PMA_TAG:-5.1}
+    hostname: pma1
+    networks:
+      - webproxy
+      - mysql
+    environment:
+      VIRTUAL_HOST: pma.${VHOST}
+      PMA_HOSTS: mysql1,mysql2,mysql3
+
+networks:
+  mysql:
+  webproxy:
+    external:
+      name: ${PROXY_NETWORK:-webproxy}

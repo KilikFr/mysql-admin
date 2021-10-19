@@ -8,6 +8,9 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
  * @ORM\Entity(repositoryClass=SlaveRepository::class)
+ * @ORM\Table(uniqueConstraints={
+ *     @ORM\UniqueConstraint(columns={"server_id", "channel_name"}),
+ * })
  */
 class Slave
 {
@@ -18,14 +21,14 @@ class Slave
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * Master for this slave (where the slave is connecting to)
      *
      * @ORM\ManyToOne(targetEntity=Server::class, inversedBy="slaves")
      */
-    private Server $master;
+    private ?Server $master = null;
 
     /**
      * Server for this slave (where the slave run)
@@ -33,17 +36,17 @@ class Slave
      * @ORM\ManyToOne(targetEntity=Server::class, inversedBy="channels")
      * @ORM\JoinColumn(nullable=false)
      */
-    private ?Server $server;
+    private ?Server $server = null;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      */
-    private ?int $channelNumber;
+    private ?string $channelName = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $description;
+    private ?string $description = null;
 
     public function getId(): ?int
     {
@@ -74,14 +77,14 @@ class Slave
         return $this;
     }
 
-    public function getChannelNumber(): ?int
+    public function getChannelName(): ?string
     {
-        return $this->channelNumber;
+        return $this->channelName;
     }
 
-    public function setChannelNumber(?int $channelNumber): self
+    public function setChannelName(?string $channelName): self
     {
-        $this->channelNumber = $channelNumber;
+        $this->channelName = $channelName;
 
         return $this;
     }

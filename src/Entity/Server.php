@@ -7,9 +7,16 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=ServerRepository::class)
+ * @ORM\Table(uniqueConstraints={
+ *     @ORM\UniqueConstraint(columns={"name"}),
+ *     @ORM\UniqueConstraint(columns={"uuid"}),
+ * })
+ * @UniqueEntity("name")
+ * @UniqueEntity("uuid")
  */
 class Server
 {
@@ -29,14 +36,21 @@ class Server
     private ?Cluster $cluster;
 
     /**
+     * MySQL Server ID
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private ?int $serverId = null;
+
+    /**
      * @ORM\Column(type="guid", nullable=true)
      */
-    private $uuid;
+    private ?string $uuid = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private string $host;
+    private ?string $host;
 
     /**
      * @ORM\Column(type="integer")
@@ -46,7 +60,7 @@ class Server
     /**
      * @ORM\Column(type="string", length=64)
      */
-    private string $name;
+    private ?string $name;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -107,6 +121,18 @@ class Server
     public function getUuid(): ?string
     {
         return $this->uuid;
+    }
+
+    public function getServerId(): ?int
+    {
+        return $this->serverId;
+    }
+
+    public function setServerId(?int $serverId): self
+    {
+        $this->serverId = $serverId;
+
+        return $this;
     }
 
     public function setUuid(?string $uuid): self
