@@ -195,6 +195,11 @@ class ChecksumCommand extends Command
 
             $io->writeln('');
 
+            if (count($tablesToScan) == 0) {
+                $io->writeln('all tables are identical');
+                break;
+            }
+
             if (count($tablesToScan) > 0) {
                 $io->writeln(sprintf('%d tables are different between master and slave', count($tablesToScan)));
                 $table = new Table($output);
@@ -212,10 +217,11 @@ class ChecksumCommand extends Command
                 }
                 $table->render();
 
-                $io->writeln('waiting before next scan');
-                sleep($input->getOption('wait-scan'));
-            } else {
-                break;
+                // only when remaining scans
+                if ($scan < $maxScan - 1) {
+                    $io->writeln('waiting before next scan');
+                    sleep($input->getOption('wait-scan'));
+                }
             }
         }
 
