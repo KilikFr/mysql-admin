@@ -63,7 +63,7 @@ class ServerService
 
         $stmt = $connection->query('SHOW VARIABLES', \PDO::FETCH_ASSOC);
         if (false === $stmt) {
-            $message = sprintf  ('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
             throw new \Exception($message);
         }
 
@@ -85,12 +85,12 @@ class ServerService
 
         if (!empty($variables['server_uuid']) && $variables['server_uuid'] != $server->getUuid()) {
             $server->setUuid($variables['server_uuid']);
-            $this->logService->addServerLog($server,'uuid_changed', $server->getUuid());
+            $this->logService->addServerLog($server, 'uuid_changed', $server->getUuid());
         }
 
         if (!empty($variables['server_id']) && $variables['server_id'] != $server->getServerId()) {
             $server->setServerId($variables['server_id']);
-            $this->logService->addServerLog($server,'server_id_changed', $server->getServerId());
+            $this->logService->addServerLog($server, 'server_id_changed', $server->getServerId());
         }
 
         $this->save($server, true);
@@ -106,4 +106,68 @@ class ServerService
         }
 
     }
+
+    /**
+     * List server's databases
+     *
+     * @throws \Exception
+     */
+    public function showDatabases(Server $server): array
+    {
+        $databases = [];
+
+        $connection = $this->connectionService->getServerConnection($server);
+
+        $stmt = $connection->query('SHOW DATABASES', \PDO::FETCH_ASSOC);
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+
+        while ($row = $stmt->fetch()) {
+            $databases[] = $row['Database'];
+        }
+
+        return $databases;
+    }
+
+    /**
+     * List server database tables
+     *
+     * @throws \Exception
+     */
+    public function showTables(Server $server, string $database): array
+    {
+        $tables = [];
+
+        $connection = $this->connectionService->getServerConnection($server);
+
+        $stmt = $connection->query(sprintf('SHOW TABLES FROM `%s`', $database), \PDO::FETCH_NUM);
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+
+        while ($row = $stmt->fetch()) {
+            $tables[] = $row[0];
+        }
+
+        return $tables;
+    }
+
+    public function tableChecksum(Server $server, string $database, string $table): string
+    {
+        $connection = $this->connectionService->getServerConnection($server);
+
+        $stmt = $connection->query(sprintf('CHECKSUM TABLE `%s`.`%s`', $database, $table), \PDO::FETCH_ASSOC);
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+
+        $row = $stmt->fetch();
+
+        return $row['Checksum'];
+    }
+
 }
