@@ -117,6 +117,9 @@
     "laminas/laminas-code": {
         "version": "4.4.3"
     },
+    "michaeldegroot/doctrine-encrypt-bundle": {
+        "version": "4.0.5"
+    },
     "monolog/monolog": {
         "version": "2.3.5"
     },
@@ -138,6 +141,21 @@
     },
     "nikic/php-parser": {
         "version": "v4.13.0"
+    },
+    "paragonie/constant_time_encoding": {
+        "version": "v2.4.0"
+    },
+    "paragonie/halite": {
+        "version": "v4.8.0"
+    },
+    "paragonie/hidden-string": {
+        "version": "v2.0.0"
+    },
+    "paragonie/random_compat": {
+        "version": "v9.99.100"
+    },
+    "paragonie/sodium_compat": {
+        "version": "v1.17.0"
     },
     "phar-io/manifest": {
         "version": "2.0.3"

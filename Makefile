@@ -57,6 +57,9 @@ help:
 # Auto conf
 #==============================================================================
 
+config/external:
+	mkdir config/external
+
 .env:
 	cp .env.dist .env
 
@@ -66,7 +69,7 @@ help:
 docker-compose.yml:
 	cp docker-compose.yml.dist docker-compose.yml
 
-autoconf: .env .php.env docker-compose.yml
+autoconf: .env .php.env config/external docker-compose.yml
 
 #==============================================================================
 # Standard docker dev commands

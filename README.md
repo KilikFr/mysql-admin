@@ -2,6 +2,12 @@
 
 A tool to handle MySQL replication (and more ?).
 
+## Installation
+
+! IMPORTANT !
+
+you should map (or save) your config/external directory (because it will contain Key to encrypt/decrypt stored passwords).
+
 ## To work on this project (with a demo cluster)
 
 ```shell

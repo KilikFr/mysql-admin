@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 use App\Repository\ServerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -74,6 +75,7 @@ class Server
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Encrypted
      */
     private ?string $password;
 
