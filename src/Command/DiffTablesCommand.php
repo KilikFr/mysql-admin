@@ -15,9 +15,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class ChecksumCommand extends Command
+class DiffTablesCommand extends Command
 {
-    protected static $defaultName = 'app:checksum';
+    protected static $defaultName = 'app:diff:tables';
     protected static $defaultDescription = 'Compare tables checksum between two servers';
 
     private ServerService $serverService;

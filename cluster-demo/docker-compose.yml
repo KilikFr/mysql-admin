@@ -62,6 +62,7 @@ services:
     environment:
       VIRTUAL_HOST: pma.${VHOST}
       PMA_HOSTS: mysql1,mysql2,mysql3
+      UPLOAD_LIMIT: 2G
 
 networks:
   mysql:
