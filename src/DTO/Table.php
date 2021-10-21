@@ -73,4 +73,15 @@ class Table
         // not found
         return $fields;
     }
+
+    public function hasType(string $type): bool
+    {
+        foreach ($this->fields as $field) {
+            if ($field->getType() === $type) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

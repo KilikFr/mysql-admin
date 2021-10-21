@@ -4,29 +4,16 @@ namespace App\DTO;
 
 class TableStatus
 {
-    private ?string $database = null;
-    private ?string $table = null;
+    private ?Table $table = null;
     private ?string $lastChecksum = null;
     private ?string $previousChecksum = null;
 
-    public function getDatabase(): ?string
-    {
-        return $this->database;
-    }
-
-    public function setDatabase(?string $database): self
-    {
-        $this->database = $database;
-
-        return $this;
-    }
-
-    public function getTable(): ?string
+    public function getTable(): ?Table
     {
         return $this->table;
     }
 
-    public function setTable(?string $table): self
+    public function setTable(?Table $table): self
     {
         $this->table = $table;
 
@@ -56,5 +43,10 @@ class TableStatus
         $this->previousChecksum = $previousChecksum;
 
         return $this;
+    }
+
+    public function __clone()
+    {
+        $this->table = clone $this->table;
     }
 }

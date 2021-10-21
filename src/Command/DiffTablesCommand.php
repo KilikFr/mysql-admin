@@ -49,7 +49,8 @@ class DiffTablesCommand extends Command
                 'Tables to skip (full format: database.table)'
             )
             ->addOption('max-scan', null, InputOption::VALUE_REQUIRED, 'Max scan attempts', 5)
-            ->addOption('wait-scan', null, InputOption::VALUE_REQUIRED, 'Wait (seconds) between 2 attempts', 5);
+            ->addOption('wait-scan', null, InputOption::VALUE_REQUIRED, 'Wait (seconds) between 2 attempts', 5)
+            ->addOption('json-fix', null, InputOption::VALUE_NONE, 'Fix MySQL 5.7 checksum json bug');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -116,13 +117,21 @@ class DiffTablesCommand extends Command
         $tablesToScan = [];
         foreach ($databasesToScan as $databaseToScan) {
             foreach ($this->serverService->showTables($master, $databaseToScan) as $tableToScan) {
-                $tablesToScan[] = (new TableStatus())->setDatabase($databaseToScan)->setTable($tableToScan);
+                $tableStatus = new TableStatus();
+                $tableStatus->setTable($this->serverService->describeTable($master, $databaseToScan, $tableToScan));
+
+                $tablesToScan[] = $tableStatus;
             }
         }
         if (0 == count($tablesToScan)) {
             $io->warning('no tables to scan');
 
             return self::FAILURE;
+        }
+
+        $checksumOptions = 0;
+        if ($input->getOption('json-fix')) {
+            $checksumOptions |= ServerService::CHECKUM_OPTION_JSON_FIX;
         }
 
         $maxScan = $input->getOption('max-scan');
@@ -137,23 +146,18 @@ class DiffTablesCommand extends Command
 
             foreach ($tablesToScan as $tableKey => $masterTable) {
                 if (!isset($slaveTableStatus[$tableKey])) {
-                    $slaveTableStatus[$tableKey] = clone $masterTable;
+                    $slaveTableStatus[$tableKey] = (clone $masterTable);
+                    $slaveTableStatus[$tableKey]->getTable()->setServer($slave);
                 }
                 $slaveTable = $slaveTableStatus[$tableKey];
                 try {
-                    $masterTable->setLastChecksum(
-                        $this->serverService->tableChecksum(
-                            $master,
-                            $masterTable->getDatabase(),
-                            $masterTable->getTable()
-                        )
-                    );
+                    $masterTable->setLastChecksum($this->serverService->tableChecksum($masterTable->getTable(), $checksumOptions));
                 } catch (\Exception $e) {
                     $io->error(
                         sprintf(
                             'error scanning %s.%s on master: %s',
-                            $masterTable->getDatabase(),
-                            $masterTable->getTable(),
+                            $masterTable->getTable()->getDatabase(),
+                            $masterTable->getTable()->getName(),
                             $e->getMessage()
                         )
                     );
@@ -161,19 +165,13 @@ class DiffTablesCommand extends Command
                     return self::FAILURE;
                 }
                 try {
-                    $slaveTable->setLastChecksum(
-                        $this->serverService->tableChecksum(
-                            $slave,
-                            $masterTable->getDatabase(),
-                            $masterTable->getTable()
-                        )
-                    );
+                    $slaveTable->setLastChecksum($this->serverService->tableChecksum($slaveTable->getTable(), $checksumOptions));
                 } catch (\Exception $e) {
                     $io->error(
                         sprintf(
                             'error scanning %s.%s on slave: %s',
-                            $tableToScan->getDatabase(),
-                            $tableToScan->getTable(),
+                            $tableToScan->getTable()->getDatabase(),
+                            $tableToScan->getTable()->getName(),
                             $e->getMessage()
                         )
                     );
@@ -187,7 +185,6 @@ class DiffTablesCommand extends Command
                     unset($tablesToScan[$tableKey]);
                 }
 
-                // @todo detect non changing checksum
                 $progress->advance();
             }
             $progress->display();
@@ -207,8 +204,8 @@ class DiffTablesCommand extends Command
                     $slaveTable = $slaveTableStatus[$tableKey];
                     $table->addRow(
                         [
-                            $tableToScan->getDatabase(),
-                            $tableToScan->getTable(),
+                            $tableToScan->getTable()->getDatabase(),
+                            $tableToScan->getTable()->getName(),
                             $tableToScan->getLastChecksum(),
                             $slaveTable->getLastChecksum(),
                         ]

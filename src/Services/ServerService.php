@@ -16,6 +16,8 @@ class ServerService
     private SlaveService $slaveService;
     private LogService $logService;
 
+    public const CHECKUM_OPTION_JSON_FIX = 1;
+
     public function __construct(
         ConnectionService $connectionService,
         EntityManagerInterface $entityManager,
@@ -153,11 +155,68 @@ class ServerService
         return $tables;
     }
 
-    public function tableChecksum(Server $server, string $database, string $table): string
+    private function tableChecksumWithCrc(Table $table): string
     {
-        $connection = $this->connectionService->getServerConnection($server);
+        $connection = $this->connectionService->getServerConnection($table->getServer());
 
-        $stmt = $connection->query(sprintf('CHECKSUM TABLE `%s`.`%s`', $database, $table), \PDO::FETCH_ASSOC);
+        $primaryFields = $table->getPrimary();
+
+        if (0 == count($primaryFields)) {
+            throw new \Exception('no primary key defined on this table');
+        }
+
+        $dataFields = '';
+        foreach ($table->getFields() as $field) {
+            if ('' != $dataFields) {
+                $dataFields .= ',';
+            }
+            $dataFields .= "'".$field->getField().":',";
+            if ($field->isNullable()) {
+                $dataFields .= sprintf("IFNULL(`%s`,'')", $field->getField());
+            } else {
+                $dataFields .= sprintf('`%s`', $field->getField());
+            }
+        }
+
+        if (count($primaryFields) > 1) {
+            $orderByFields = '';
+            foreach ($primaryFields as $primaryField) {
+                if ('' !== $orderByFields) {
+                    $orderByFields .= ',';
+                }
+                $orderByFields .= '`'.$primaryField->getField().'`';
+            }
+        } else {
+            $orderByFields = '`'.$primaryFields[0]->getField().'`';
+        }
+
+        $query = sprintf(
+            'SELECT SUM(CRC32(CONCAT(%s))) AS hash FROM `%s`.`%s` ORDER BY %s',
+            $dataFields,
+            $table->getDatabase(),
+            $table->getName(),
+            $orderByFields,
+        );
+
+        $stmt = $connection->query($query, \PDO::FETCH_ASSOC);
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+
+        $row = $stmt->fetch();
+
+        return $row['hash'];
+    }
+
+    private function tableChecksumNative(Table $table): string
+    {
+        $connection = $this->connectionService->getServerConnection($table->getServer());
+
+        $stmt = $connection->query(
+            sprintf('CHECKSUM TABLE `%s`.`%s`', $table->getDatabase(), $table->getName()),
+            \PDO::FETCH_ASSOC
+        );
         if (false === $stmt) {
             $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
             throw new \Exception($message);
@@ -166,6 +225,15 @@ class ServerService
         $row = $stmt->fetch();
 
         return $row['Checksum'];
+    }
+
+    public function tableChecksum(Table $table, int $options = 0): string
+    {
+        if (($options & self::CHECKUM_OPTION_JSON_FIX) && $table->hasType('json')) {
+            return $this->tableChecksumWithCrc($table);
+        } else {
+            return $this->tableChecksumNative($table);
+        }
     }
 
     public function describeTable(Server $server, string $database, string $tableName): Table
