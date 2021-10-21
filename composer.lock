@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "df709af2f4a0a1474350188b9e4ccb5a",
+    "content-hash": "a687757a0f20e990a4bb38d520c6bde6",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -1743,6 +1743,57 @@
                 "wiki": "https://github.com/Atlantic18/DoctrineExtensions/tree/main/doc"
             },
             "time": "2021-06-22T11:23:22+00:00"
+        },
+        {
+            "name": "kilik/table",
+            "version": "2.8.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/KilikFr/TableBundle.git",
+                "reference": "cdfc5c62ccf9d5de1e4c693b32bbbebaa33797b9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/KilikFr/TableBundle/zipball/cdfc5c62ccf9d5de1e4c693b32bbbebaa33797b9",
+                "reference": "cdfc5c62ccf9d5de1e4c693b32bbbebaa33797b9",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/doctrine-bundle": "~1.0||~2.0",
+                "doctrine/orm": "^2.5",
+                "ext-json": "*",
+                "php": "^7.2",
+                "symfony/form": "^4.0||^5.0",
+                "twig/twig": "^1.0||^2.0||^3.0"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "^4.0||^5.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Kilik\\TableBundle\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michel Naud",
+                    "email": "mitch@kilik.fr",
+                    "role": "Author"
+                }
+            ],
+            "description": "Symfony Ajax Datagrid Bundle for doctrine entities",
+            "homepage": "https://github.com/KilikFr/TableBundle",
+            "keywords": [
+                "jquery",
+                "symfony",
+                "table"
+            ],
+            "time": "2021-09-03T10:40:14+00:00"
         },
         {
             "name": "laminas/laminas-code",

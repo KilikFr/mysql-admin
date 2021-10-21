@@ -1,0 +1,30 @@
+{{ form_start(form) }}
+<div class="modal-dialog confirmation-modal">
+    <div class="modal-content">
+        <div class="modal-body">
+            <br>
+            <div class="confirmation-modal-icon-container">
+                <i class="fa fa-trash-alt text-danger"></i>
+            </div>
+            <br>
+            <div class="confirmation-modal-title-container">
+                <h1>{{ "title.deleteConfirmDialog" | trans }}</h1>
+            </div>
+            <br>
+            <div class="confirmation-modal-text-container">
+                <span>{{ deleteConfirmationText }}</span>
+            </div>
+            <br><br>
+            <div class="confirmation-modal-buttons-container">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    {{ "action.cancel" | trans | capitalize }}
+                </button>
+                <button type="submit" class="btn btn-danger btn-ok"{% if not isDeletable %} disabled="disabled"{% endif %}>
+                    <i class="fa fa-trash-alt"></i> {{ "action.delete" | trans | capitalize }}
+                </button>
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}

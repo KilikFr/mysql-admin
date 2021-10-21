@@ -43,7 +43,7 @@
             <li class="nav-item{% if section == "home" %} active{% endif %}">
                 <a class="nav-link" href="{{ path("home") }}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
+                    <span>{{ 'leftMenu.dashboard' | trans | capitalize }}</span></a>
             </li>
 
             <!-- Divider -->
@@ -51,13 +51,13 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Administration
+                {{ 'leftMenu.administration' | trans | capitalize }}
             </div>
 
-            <li class="nav-item{% if section == "admin" and subSection == "user" %} active{% endif %}">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-users"></i>
-                    <span>Servers</span>
+            <li class="nav-item{% if section == "admin" and subSection == "servers" %} active{% endif %}">
+                <a class="nav-link" href="{{ path("server_list") }}">
+                    <i class="fas fa-server"></i>
+                    <span>{{ 'leftMenu.servers' | trans | capitalize }}</span>
                 </a>
             </li>
         </ul>
@@ -136,26 +136,6 @@
 
     </div>
     <!-- End of Page Wrapper -->
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    {% include "components/_remote_modal.html.twig" %}
     {% block javascript %}{{ parent() }}{% endblock javascript %}
 {% endblock body %}

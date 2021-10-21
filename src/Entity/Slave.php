@@ -27,6 +27,7 @@ class Slave
      * Master for this slave (where the slave is connecting to).
      *
      * @ORM\ManyToOne(targetEntity=Server::class, inversedBy="slaves")
+     * @ORM\JoinColumn(onDelete="SET NULL")
      */
     private ?Server $master = null;
 
@@ -34,7 +35,7 @@ class Slave
      * Server for this slave (where the slave run).
      *
      * @ORM\ManyToOne(targetEntity=Server::class, inversedBy="channels")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private ?Server $server = null;
 

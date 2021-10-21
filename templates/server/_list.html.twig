@@ -1,0 +1,31 @@
+{% extends "@KilikTable/theme/dark4/tables/alternative.html.twig" %}
+
+{% block tableHeadStdColumns %}
+    <td class="list-first-column-3">
+        <b>{{ "word.actions" | trans | capitalize }}</b>
+    </td>
+    {{ parent() }}
+{% endblock tableHeadStdColumns %}
+
+{% block tableHeadStdFilters %}
+    <td>
+        &nbsp;
+    </td>
+    {{ parent() }}
+{% endblock tableHeadStdFilters %}
+
+{% block tableBodyStdColumns %}
+    <td>
+        <a href="{{ path("server_view", {"server": row.object.name }) }}" class="btn btn-sm btn-outline btn-info">
+            <i class="fa fa-eye"></i>
+        </a>
+        <a href="{{ path("server_edit", {"server": row.object.name }) }}" class="btn btn-sm btn-outline btn-info">
+            <i class="fa fa-edit"></i>
+        </a>
+        <a href="{{ path("server_delete", {"server": row.object.name}) }}"
+           id="btn-delete" class="openRemoteModal btn btn-sm btn-outline btn-danger">
+            <i class="fa fa-trash"></i>
+        </a>
+    </td>
+    {{ parent() }}
+{% endblock tableBodyStdColumns %}

@@ -29,11 +29,13 @@ class Log
 
     /**
      * @ORM\ManyToOne(targetEntity=Server::class)
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private ?Server $server = null;
 
     /**
      * @ORM\ManyToOne(targetEntity=Slave::class)
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private ?Slave $slave = null;
 
