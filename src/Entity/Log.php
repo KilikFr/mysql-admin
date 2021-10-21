@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Repository\LogRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
  * @ORM\Entity(repositoryClass=LogRepository::class)

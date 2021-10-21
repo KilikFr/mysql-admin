@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Repository\ServerRepository;
 use App\Services\ServerService;
-use App\Services\SlaveService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -70,7 +69,7 @@ class ScanCommand extends Command
             $serversToScan = $this->serverRepository->findAll();
         }
 
-        if (count($serversToScan) == 0) {
+        if (0 == count($serversToScan)) {
             $io->warning('no servers to scan');
 
             return self::FAILURE;

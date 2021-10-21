@@ -3,10 +3,8 @@
 namespace App\Services;
 
 use App\DTO\SlaveStatus;
-use App\Entity\Log;
 use App\Entity\Server;
 use App\Entity\Slave;
-use App\Repository\SlaveRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -61,7 +59,7 @@ class SlaveService
     }
 
     /**
-     * Scan slaves, and add news to slave table
+     * Scan slaves, and add news to slave table.
      *
      * @return SlaveStatus[]|array
      */
@@ -70,7 +68,6 @@ class SlaveService
         $slaveStatuses = $this->showSlaveStatus($server);
 
         foreach ($slaveStatuses as $slaveStatus) {
-
             $slave = $this->entityManager->getRepository(Slave::class)->findOneBy(
                 ['server' => $server, 'channelName' => $slaveStatus->getChannelName()]
             );
@@ -134,6 +131,5 @@ class SlaveService
         if ($flush) {
             $this->entityManager->flush();
         }
-
     }
 }

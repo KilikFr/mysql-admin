@@ -16,16 +16,17 @@ class DefaultController extends AbstractController
      */
     public function index(): Response
     {
-        $data=[
-            'clustersCount'=>$this->getDoctrine()->getRepository(Cluster::class)->count([]),
-            'serversCount'=>$this->getDoctrine()->getRepository(Server::class)->count([]),
-            'channelsCount'=>$this->getDoctrine()->getRepository(Slave::class)->count([]),
+        $data = [
+            'clustersCount' => $this->getDoctrine()->getRepository(Cluster::class)->count([]),
+            'serversCount' => $this->getDoctrine()->getRepository(Server::class)->count([]),
+            'channelsCount' => $this->getDoctrine()->getRepository(Slave::class)->count([]),
         ];
+
         return $this->render('default/index.html.twig', $data);
     }
 
     /**
-     * Top menu
+     * Top menu.
      */
     public function _header(): Response
     {

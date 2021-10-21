@@ -8,11 +8,11 @@ class SlaveStatus
 {
     use Timestampable;
 
-    const STATUS_UNKNOWN = null;
-    const STATUS_ERROR = 0;
-    const STATUS_OK = 1;
+    public const STATUS_UNKNOWN = null;
+    public const STATUS_ERROR = 0;
+    public const STATUS_OK = 1;
 
-    const STATUSES = [
+    public const STATUSES = [
         self::STATUS_UNKNOWN,
         self::STATUS_ERROR,
         self::STATUS_OK,
@@ -898,5 +898,4 @@ class SlaveStatus
 
         return $status;
     }
-
 }

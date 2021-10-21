@@ -2,11 +2,10 @@
 
 namespace App\Services;
 
+use App\DTO\Field;
 use App\DTO\MasterStatus;
-use App\DTO\SlaveStatus;
+use App\DTO\Table;
 use App\Entity\Server;
-use App\Entity\Slave;
-use App\Repository\SlaveRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -75,7 +74,7 @@ class ServerService
     }
 
     /**
-     * Scan master status
+     * Scan master status.
      */
     public function scan(Server $server): void
     {
@@ -104,11 +103,10 @@ class ServerService
         if ($flush) {
             $this->entityManager->flush();
         }
-
     }
 
     /**
-     * List server's databases
+     * List server's databases.
      *
      * @throws \Exception
      */
@@ -132,7 +130,7 @@ class ServerService
     }
 
     /**
-     * List server database tables
+     * List server database tables.
      *
      * @throws \Exception
      */
@@ -170,4 +168,32 @@ class ServerService
         return $row['Checksum'];
     }
 
+    public function describeTable(Server $server, string $database, string $tableName): Table
+    {
+        $table = new Table();
+        $table->setName($tableName);
+        $table->setDatabase($database);
+        $table->setServer($server);
+
+        $connection = $this->connectionService->getServerConnection($server);
+
+        $stmt = $connection->query(sprintf('DESCRIBE `%s`.`%s`', $database, $tableName), \PDO::FETCH_ASSOC);
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+
+        while ($row = $stmt->fetch()) {
+            $field = new Field();
+            $field->setField($row['Field']);
+            $field->setType($row['Type']);
+            $field->setNullable('yes' === strtolower($row['Null']));
+            $field->setKey($row['Key']);
+            $field->setDefault($row['Default']);
+            $field->setExtra($row['Extra']);
+            $table->addField($field);
+        }
+
+        return $table;
+    }
 }
