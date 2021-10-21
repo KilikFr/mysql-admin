@@ -49,7 +49,8 @@ class DiffTablesCommand extends Command
                 'Tables to skip (full format: database.table)'
             )
             ->addOption('max-scan', null, InputOption::VALUE_REQUIRED, 'Max scan attempts', 5)
-            ->addOption('wait-scan', null, InputOption::VALUE_REQUIRED, 'Wait (seconds) between 2 attempts', 5);
+            ->addOption('wait-scan', null, InputOption::VALUE_REQUIRED, 'Wait (seconds) between 2 attempts', 5)
+            ->addOption('json-fix', null, InputOption::VALUE_NONE, 'Fix MySQL 5.7 checksum json bug');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -187,7 +188,6 @@ class DiffTablesCommand extends Command
                     unset($tablesToScan[$tableKey]);
                 }
 
-                // @todo detect non changing checksum
                 $progress->advance();
             }
             $progress->display();
