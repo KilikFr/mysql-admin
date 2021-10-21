@@ -37,7 +37,7 @@ class Server
     private ?Cluster $cluster;
 
     /**
-     * MySQL Server ID
+     * MySQL Server ID.
      *
      * @ORM\Column(type="integer", nullable=true)
      */
@@ -80,7 +80,7 @@ class Server
     private ?string $password;
 
     /**
-     * Server's Slaves (master side)
+     * Server's Slaves (master side).
      *
      * @ORM\OneToMany(targetEntity=Slave::class, mappedBy="master")
      *
@@ -89,7 +89,7 @@ class Server
     private $slaves;
 
     /**
-     * Server's Slaves (slave side)
+     * Server's Slaves (slave side).
      *
      * @ORM\OneToMany(targetEntity=Slave::class, mappedBy="server")
      *

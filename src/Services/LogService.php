@@ -2,20 +2,17 @@
 
 namespace App\Services;
 
-use App\DTO\MasterStatus;
-use App\DTO\SlaveStatus;
 use App\Entity\Log;
 use App\Entity\Server;
 use App\Entity\Slave;
-use App\Repository\SlaveRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class LogService
 {
-    const LOG_INFO = 0;
-    const LOG_WARNING = 1;
-    const LOG_ERROR = 2;
+    public const LOG_INFO = 0;
+    public const LOG_WARNING = 1;
+    public const LOG_ERROR = 2;
 
     private EntityManager $entityManager;
 
@@ -62,5 +59,4 @@ class LogService
         $log->setSlave($slave);
         $this->add($log, $code, $message, $level, $flush);
     }
-
 }

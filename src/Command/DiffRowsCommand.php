@@ -92,14 +92,14 @@ class DiffRowsCommand extends Command
         }
 
         $masterTable = $this->serverService->describeTable($master, $masterDatabase, $masterTableName);
-        if ($masterTable->getPrimary() === null) {
+        if (null === $masterTable->getPrimary()) {
             $io->error('primary key not found');
 
             return self::FAILURE;
         }
 
         $slaveTable = $this->serverService->describeTable($slave, $slaveDatabase, $slaveTableName);
-        if ($slaveTable->getPrimary() === null) {
+        if (null === $slaveTable->getPrimary()) {
             $io->error('primary key not found');
 
             return self::FAILURE;

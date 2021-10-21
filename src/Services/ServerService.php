@@ -4,11 +4,8 @@ namespace App\Services;
 
 use App\DTO\Field;
 use App\DTO\MasterStatus;
-use App\DTO\SlaveStatus;
 use App\DTO\Table;
 use App\Entity\Server;
-use App\Entity\Slave;
-use App\Repository\SlaveRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -77,7 +74,7 @@ class ServerService
     }
 
     /**
-     * Scan master status
+     * Scan master status.
      */
     public function scan(Server $server): void
     {
@@ -106,11 +103,10 @@ class ServerService
         if ($flush) {
             $this->entityManager->flush();
         }
-
     }
 
     /**
-     * List server's databases
+     * List server's databases.
      *
      * @throws \Exception
      */
@@ -134,7 +130,7 @@ class ServerService
     }
 
     /**
-     * List server database tables
+     * List server database tables.
      *
      * @throws \Exception
      */
@@ -200,5 +196,4 @@ class ServerService
 
         return $table;
     }
-
 }

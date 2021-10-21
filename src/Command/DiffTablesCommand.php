@@ -5,7 +5,6 @@ namespace App\Command;
 use App\DTO\TableStatus;
 use App\Repository\ServerRepository;
 use App\Services\ServerService;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
@@ -120,7 +119,7 @@ class DiffTablesCommand extends Command
                 $tablesToScan[] = (new TableStatus())->setDatabase($databaseToScan)->setTable($tableToScan);
             }
         }
-        if (count($tablesToScan) == 0) {
+        if (0 == count($tablesToScan)) {
             $io->warning('no tables to scan');
 
             return self::FAILURE;
@@ -128,12 +127,12 @@ class DiffTablesCommand extends Command
 
         $maxScan = $input->getOption('max-scan');
 
-        for ($scan = 0; $scan < $maxScan; $scan++) {
+        for ($scan = 0; $scan < $maxScan; ++$scan) {
             $io->writeln(sprintf('computing checksum - pass %d / %d', $scan + 1, $maxScan));
             $progress = new ProgressBar($output, count($tablesToScan));
             $progress->display();
 
-            /** @var  $slaveTableStatus */
+            /** @var $slaveTableStatus */
             $slaveTableStatus = [];
 
             foreach ($tablesToScan as $tableKey => $masterTable) {
@@ -195,7 +194,7 @@ class DiffTablesCommand extends Command
 
             $io->writeln('');
 
-            if (count($tablesToScan) == 0) {
+            if (0 == count($tablesToScan)) {
                 $io->writeln('all tables are identical');
                 break;
             }

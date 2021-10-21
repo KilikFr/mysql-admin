@@ -2,22 +2,15 @@
 
 namespace App\Services;
 
-use App\DTO\Field;
-use App\DTO\MasterStatus;
-use App\DTO\SlaveStatus;
 use App\DTO\Table;
-use App\Entity\Server;
 use App\Entity\Slave;
-use App\Repository\SlaveRepository;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 
 class DiffRowService
 {
-    const DIFF_EQUAL = 0;
-    const DIFF_MISSING_MASTER = 1;
-    const DIFF_MISSING_SLAVE = 2;
-    const DIFF_DIFFERENT = 3;
+    public const DIFF_EQUAL = 0;
+    public const DIFF_MISSING_MASTER = 1;
+    public const DIFF_MISSING_SLAVE = 2;
+    public const DIFF_DIFFERENT = 3;
 
     private ConnectionService $connectionService;
 
@@ -47,14 +40,14 @@ class DiffRowService
 
         $primaryFields = $table->getPrimary();
 
-        if (count($primaryFields) == 0) {
+        if (0 == count($primaryFields)) {
             throw new \Exception('no primary key defined on this table');
         }
 
         $dataFields = '';
         foreach ($table->getFields() as $field) {
-            if ($field->getKey() != 'PRI') {
-                if ($dataFields != '') {
+            if ('PRI' != $field->getKey()) {
+                if ('' != $dataFields) {
                     $dataFields .= ',';
                 }
                 $dataFields .= sprintf('`%s`', $field->getField());
@@ -190,5 +183,4 @@ class DiffRowService
             }
         }
     }
-
 }

@@ -24,14 +24,14 @@ class Slave
     private ?int $id = null;
 
     /**
-     * Master for this slave (where the slave is connecting to)
+     * Master for this slave (where the slave is connecting to).
      *
      * @ORM\ManyToOne(targetEntity=Server::class, inversedBy="slaves")
      */
     private ?Server $master = null;
 
     /**
-     * Server for this slave (where the slave run)
+     * Server for this slave (where the slave run).
      *
      * @ORM\ManyToOne(targetEntity=Server::class, inversedBy="channels")
      * @ORM\JoinColumn(nullable=false)

@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use PDO;
 use App\Entity\Server;
+use PDO;
 
 class ConnectionService
 {
@@ -13,7 +13,7 @@ class ConnectionService
     private array $connectionPool = [];
 
     /**
-     * Get a Server PDO connection
+     * Get a Server PDO connection.
      *
      * @throws \Exception
      */
@@ -31,10 +31,7 @@ class ConnectionService
 
             return $this->connectionPool[$server->getId()];
         } catch (\PDOException $e) {
-            throw new \Exception(
-                sprintf('connection error to server %s: %s', $server->getName(), $e->getMessage()),
-                $e->getCode()
-            );
+            throw new \Exception(sprintf('connection error to server %s: %s', $server->getName(), $e->getMessage()), $e->getCode());
         }
     }
 }
