@@ -35,7 +35,7 @@ class Field
         return $this;
     }
 
-    public function getNullable(): ?bool
+    public function isNullable(): ?bool
     {
         return $this->nullable;
     }
