@@ -1,0 +1,102 @@
+{% extends 'layout.html.twig' %}
+{% set section = 'admin' %}
+{% set subSection = 'servers' %}
+
+{% block pageContent %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{{ 'field.server.label' | trans | capitalize }} {{ server.name }}</h6>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4"><b>{{ "field.cluster.label" | trans | capitalize }} :</b></div>
+                        {% if server.cluster is not null %}
+                        <div class="col-sm-8">{{ server.cluster.name }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4"><b>{{ "field.description.label" | trans | capitalize }} :</b></div>
+                        {% if server.description is not null %}
+                        <div class="col-sm-8">{{ server.description }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4"><b>{{ "field.host.label" | trans | capitalize }} :</b></div>
+                        <div class="col-sm-8">{{ server.host }}</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4"><b>{{ "field.port.label" | trans | capitalize }} :</b></div>
+                        <div class="col-sm-8">{{ server.port }}</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4"><b>{{ "field.user.label" | trans | capitalize }} :</b></div>
+                        {% if server.user is not null %}
+                        <div class="col-sm-8">{{ server.user }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4"><b>{{ "field.password.label" | trans | capitalize }} :</b></div>
+                        {% if server.password is not null %}
+                            <div class="col-sm-8">{{ server.password }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4"><b>{{ "field.createdAt.label" | trans | capitalize }} :</b></div>
+                        <div class="col-sm-8">{{ server.createdAt | date('d/m/Y H:i:s') }}</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4"><b>{{ "field.updatedAt.label" | trans | capitalize }} :</b></div>
+                        {% if server.updatedAt is not null %}
+                            <div class="col-sm-8">{{ server.updatedAt | date('d/m/Y H:i:s') }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">{{ 'field.slave.labels' | trans | capitalize }}</h6>
+                </div>
+                <div class="card-body">
+                    {% if server.slaves is not empty %}
+                    <ul>
+                    {% for slave in server.slaves %}
+                        <li>{{ slave.server.name }} on channel {{ slave.channelName }}</li>
+                    {% endfor %}
+                    </ul>
+                    {% else %}
+                        {{ 'word.none' | trans | capitalize }}
+                    {% endif %}
+                </div>
+            </div>
+    </div>
+</div>
+
+<a href="{{ path("server_list") }}" class="btn btn-outline btn-warning">
+    <i class="fa fa-arrow-left"></i> {{ "action.back" | trans | capitalize }}
+</a>
+<a href="{{ path("server_edit", {"server": server.name }) }}" class="btn btn-outline btn-info">
+    <i class="fa fa-edit"></i> {{ "action.edit" | trans | capitalize }}
+</a>
+{% endblock %}

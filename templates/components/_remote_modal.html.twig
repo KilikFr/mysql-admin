@@ -1,0 +1,23 @@
+<div class="row">
+    {# modal loaded from remote #}
+    <div class="modal" id="remoteModal" tabindex="-1" role="dialog" aria-hidden="true">
+    </div>
+</div>
+
+<script>
+    function bindOpenRemoteModal($container) {
+        const $target = undefined!==$container ? $container.find('.openRemoteModal') : $(".openRemoteModal");
+        const $remoteModal = $("#remoteModal");
+
+        $target.click(function (e) {
+            e.preventDefault();
+            $remoteModal.html("");
+            {# clear remoteModal content (to avoid previous hazardous content) #}
+            $remoteModal.modal("show").load($(this).attr("href"));
+        });
+    }
+
+    $(document).ready(function () {
+        bindOpenRemoteModal();
+    })
+</script>

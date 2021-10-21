@@ -18,6 +18,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * })
  * @UniqueEntity("name")
  * @UniqueEntity("uuid")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Server
 {
@@ -77,7 +78,7 @@ class Server
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Encrypted
      */
-    private ?string $password;
+    private ?string $password = null;
 
     /**
      * Server's Slaves (master side).

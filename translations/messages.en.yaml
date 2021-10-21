@@ -1,0 +1,56 @@
+leftMenu:
+  dashboard: dashboard
+  administration: administration
+  servers: servers
+
+field:
+  name:
+    label: name
+  description:
+    label: description
+  cluster:
+    label: cluster
+  createdAt:
+    label: created at
+  host:
+    label: host
+  port:
+    label: port
+  user:
+    label: user
+  password:
+    label: password
+  server:
+    label: server
+  slave:
+    label: slave
+    labels: slaves
+  updatedAt:
+    label: updated at
+
+word:
+  actions: actions
+  none: none
+
+action:
+  add: add
+  addAServer: add a server
+  back: back
+  cancel: cancel
+  close: close
+  confirm: confirm
+  delete: delete
+  edit: edit
+  enterPassword: enter password
+  save: save
+
+message:
+  serverDeleteConfirmation: Are you sure to delete sever ?
+  serverDelete:
+    success: Server successfully deleted
+  serverSaved:
+    success: Server successfully saved
+
+title:
+  deleteConfirmDialog: Delete confirmation
+

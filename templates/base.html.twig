@@ -14,6 +14,12 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
               integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
               crossorigin="anonymous"/>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}"/>
+        {% if libKilikTable is defined and libKilikTable == true %}
+        <link rel="stylesheet" href="{{ asset('bundles/kiliktable/css/KilikTable.css') }}"/>
+        {% endif %}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
                 integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
                 crossorigin="anonymous"></script>
@@ -25,7 +31,7 @@
                 integrity="sha512-efUTj3HdSPwWJ9gjfGR71X9cvsrthIA78/Fvd/IN+fttQVy7XWkOAXb295j8B3cmm/kFKVxjiNYzKw9IQJHIuQ=="
                 crossorigin="anonymous"></script>
         {% if libKilikTable is defined and libKilikTable == true %}
-        <script src="/bundles/kiliktable/js/KilikTable.js"></script>
+        <script src="{{ asset('bundles/kiliktable/js/KilikTable.js') }}"></script>
         {% endif %}
         {% if libHighcharts is defined and libHighcharts == true %}
         <script src="//code.highcharts.com/4.1.8/highcharts.js"></script>
@@ -63,16 +69,13 @@
     <div id="main">
         {% block pageContent %}
         {% endblock pageContent %}
-        <div class="modal" id="remoteModal">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content" id="remoteModalContent">
-                </div>
-            </div>
-        </div>
     </div>
 
     {% block footer %}
-    {% endblock footer %} {% block javascript %}
+    {% endblock footer %}
+
+{% include "templates/components/_remote_modal.html.twig" %}
+{% block javascript %}
 <script>
 {% for message in app.flashes('success') %}
     $.notify("{{ message|escape('js') }}", "success");
@@ -92,10 +95,13 @@ $(document).ready(function () {
                 var $currentTable = $(currentTable);
                 var id = $currentTable.data("kiliktable-id");
                 if (id.length > 0) {
-                        console.log(id);
                     var path = $currentTable.data("kiliktable-path");
                     var options = $currentTable.html();
-                    new KilikTableFA(id, path, JSON.parse(options)).init();
+                    let table = new KilikTableFA(id, path, JSON.parse(options));
+                    table.init();
+                    table.afterReload = function () {
+                        bindOpenRemoteModal($('#'+table.id));
+                    }
                 }
             });
         }
