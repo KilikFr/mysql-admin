@@ -1,6 +1,7 @@
 leftMenu:
-  dashboard: dashboard
   administration: administration
+  clusters: clusters
+  dashboard: dashboard
   servers: servers
 
 field:
@@ -10,6 +11,7 @@ field:
     label: description
   cluster:
     label: cluster
+    labels: clusters
   createdAt:
     label: created at
   host:
@@ -22,6 +24,7 @@ field:
     label: password
   server:
     label: server
+    labels: servers
   slave:
     label: slave
     labels: slaves
@@ -35,6 +38,7 @@ word:
 action:
   add: add
   addAServer: add a server
+  addACluster: add a cluster
   back: back
   cancel: cancel
   close: close
@@ -45,6 +49,11 @@ action:
   save: save
 
 message:
+  clusterDeleteConfirmation: Are you sure to delete cluster ?
+  clusterDelete:
+    success: Cluster successfully deleted
+  clusterSaved:
+    success: Cluster successfully saved
   serverDeleteConfirmation: Are you sure to delete sever ?
   serverDelete:
     success: Server successfully deleted

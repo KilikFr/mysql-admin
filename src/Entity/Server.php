@@ -33,7 +33,7 @@ class Server
 
     /**
      * @ORM\ManyToOne(targetEntity=Cluster::class, inversedBy="servers")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private ?Cluster $cluster;
 
@@ -275,5 +275,10 @@ class Server
         }
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 }

@@ -25,7 +25,7 @@ class Cluster
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=32)
@@ -33,7 +33,7 @@ class Cluster
     private string $name;
 
     /**
-     * @ORM\OneToMany(targetEntity=Server::class, mappedBy="cluster")
+     * @ORM\OneToMany(targetEntity=Server::class, mappedBy="cluster", cascade={"persist"})
      *
      * @var Server[]|ArrayCollection
      */
@@ -89,5 +89,10 @@ class Cluster
         }
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 }

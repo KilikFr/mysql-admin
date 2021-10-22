@@ -2,7 +2,13 @@
 
 namespace App\Form;
 
+use App\Entity\Cluster;
+use App\Entity\Server;
+use App\Repository\ClusterRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -22,6 +28,23 @@ class ServerType extends AbstractType
                 'label' => 'field.name.label',
             ]
         );
+
+        $builder->add(
+            'cluster',
+            EntityType::class,
+            [
+                'class' => Cluster::class,
+                'query_builder' => function (ClusterRepository $repository) {
+                    return $repository->createQueryBuilder('cluster')
+                        ->orderBy('cluster.name', 'ASC');
+                },
+                'required' => false,
+                'attr' => [
+                    'class' => 'select2 clusters',
+                ],
+            ]
+        );
+
         $builder->add(
             'description',
             TextType::class,
@@ -40,7 +63,7 @@ class ServerType extends AbstractType
         );
         $builder->add(
             'port',
-            TextType::class,
+            NumberType::class,
             [
                 'required' => true,
                 'label' => 'field.port.label',
@@ -55,12 +78,11 @@ class ServerType extends AbstractType
             ]
         );
         $builder->add(
-            'password',
-            TextType::class,
+            'password-edit',
+            HiddenType::class,
             [
-                'required' => false,
-                'label' => 'field.password.label',
-                'attr' => ['readonly' => true],
+                'mapped' => false,
+                'data' => null,
             ]
         );
     }
@@ -72,7 +94,7 @@ class ServerType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => 'App\Entity\Server',
+                'data_class' => Server::class,
                 'labels' => [],
             ]
         );

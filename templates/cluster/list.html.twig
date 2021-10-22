@@ -1,0 +1,27 @@
+{% extends 'layout.html.twig' %}
+{% set section = 'admin' %}
+{% set subSection = 'clusters' %}
+
+{% set libKilikTable = 1 %}
+
+{% block pageContent %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    {% embed "cluster/_list.html.twig" with {"table": table} %}
+                        {% block tableTitle %}
+                            <div class="btn-group" role="group" aria-label="...">
+                                <a href="{{ path("cluster_add") }}" class="btn btn-sm btn-outline btn-info"><i class="fa fa-plus" aria-hidden="true"></i> {{ 'action.addACluster' | trans | capitalize }}</a>
+                            </div>
+                        {% endblock tableTitle %}
+                    {% endembed %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+{% endblock javascript %}

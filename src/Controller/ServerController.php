@@ -61,7 +61,12 @@ class ServerController extends AbstractController
                     (new Filter())
                         ->setField('c.name')
                         ->setName('c_name')
-                )
+                )->setDisplayCallback(function ($name) {
+                    if (null===$name) {
+                        return '';
+                    }
+                    return '<a href="'.$this->generateUrl('cluster_view', ['cluster' => $name]).'">'.$name.'</a>';
+                })->setRaw(true)
         );
 
         $table->addColumn(
@@ -112,28 +117,6 @@ class ServerController extends AbstractController
                 )
         );
 
-        $table->addColumn(
-            (new Column())
-                ->setLabel('field.password.label')
-                ->setTranslateLabel(true)
-                ->setSort(['s.password' => 'asc'])
-                ->setFilter(
-                    (new Filter())
-                        ->setField('s.password')
-                        ->setName('s_password')
-                )
-                ->setDisplayCallback(
-                    function ($passwordEncrypted, $row) {
-                        $password = $row['object']->getPassword();
-                        return '<span title="'.$password.'">'.
-                            (strlen($password) <= 6 ? $password : substr($password, 0, 3).'...'.substr($password, -3)).
-                            '</span>';
-                    }
-                )
-                ->setRaw(true)
-        );
-
-
         return $table;
     }
 
@@ -172,6 +155,9 @@ class ServerController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('password-edit')->getData() !== null) {
+                $server->setPassword($form->get('password-edit')->getData());
+            }
             $this->getDoctrine()->getManager()->persist($server);
             $this->getDoctrine()->getManager()->flush();
 
@@ -201,6 +187,9 @@ class ServerController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('password-edit')->getData() !== null) {
+                $server->setPassword($form->get('password-edit')->getData());
+            }
             $this->getDoctrine()->getManager()->flush();
             $this->addFlash('success', $this->translator->trans('message.serverSaved.success'));
 
@@ -215,17 +204,11 @@ class ServerController extends AbstractController
     }
 
     /**
-     * View a server.
-     *
      * @Route("/{server}", name="server_view", methods={"GET"})
      * @ParamConverter("server", options={"mapping": {"server" : "name"}})
      *
-     * @param Request $request
-     *
-     * @return array|RedirectResponse
+     * @return array
      * @Template()
-     *
-     * @throws \Exception
      */
     public function view(Server $server)
     {
