@@ -4,73 +4,48 @@
 {% block pageContent %}
     <div class="row">
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Clusters</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ clustersCount }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-cubes fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% include "dashboard/card.html.twig"
+                with {
+                'href': path("cluster_list"),
+                'title': 'field.cluster.labels' | trans | capitalize,
+                'icon': 'fas fa-cubes',
+                'digit': clustersCount,
+                'borderClass': 'border-left-primary'
+            }
+            %}
         </div>
-
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <a href="{{ path("server_list") }}">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Servers</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ serversCount }}</div>
-                            </a>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-server fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% include "dashboard/card.html.twig"
+                with {
+                'href': path("server_list"),
+                'title': 'field.server.labels' | trans | capitalize,
+                'icon': 'fas fa-server',
+                'digit': serversCount,
+                'borderClass': 'border-left-success'
+            }
+            %}
         </div>
-
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Slaves Channels</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ channelsCount }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-server fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% include "dashboard/card.html.twig"
+                with {
+                'href': '#',
+                'title': 'Slaves Channels',
+                'icon': 'fas fa-server',
+                'digit': channelsCount,
+                'borderClass': 'border-left-info'
+            }
+            %}
         </div>
-
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Problems</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% include "dashboard/card.html.twig"
+                with {
+                'href': '#',
+                'title': 'Problems',
+                'icon': 'fas fa-comments',
+                'digit': 0,
+                'borderClass': 'border-left-warning'
+            }
+            %}
         </div>
     </div>
 {% endblock %}

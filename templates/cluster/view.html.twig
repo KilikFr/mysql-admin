@@ -1,0 +1,44 @@
+{% extends 'layout.html.twig' %}
+{% set section = 'admin' %}
+{% set subSection = 'clusters' %}
+
+{% block pageContent %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{{ 'field.cluster.label' | trans | capitalize }} {{ cluster.name }}</h6>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-1"><b>{{ "field.server.labels" | trans | capitalize }} :</b></div>
+                        <div class="col-sm-11">
+                        {% if cluster.servers is not empty %}
+                            <ul>
+                            {% for server in cluster.servers %}
+                                <li>
+                                    <a href="{{ path("server_view", {"server": server.name }) }}">
+                                        {{ server.name }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        {% else %}
+                            {{ 'word.none' | trans | capitalize }}
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="{{ path("cluster_list") }}" class="btn btn-outline btn-warning">
+    <i class="fa fa-arrow-left"></i> {{ "action.back" | trans | capitalize }}
+</a>
+<a href="{{ path("cluster_edit", {"cluster": cluster.name }) }}" class="btn btn-outline btn-info">
+    <i class="fa fa-edit"></i> {{ "action.edit" | trans | capitalize }}
+</a>
+{% endblock %}

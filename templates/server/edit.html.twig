@@ -15,15 +15,23 @@
                     <div class="form-group">
                         <div class="row">
                             <label class="col-sm-4 control-label col-sm-2 control-label">{{ form_label(form.name) }}</label>
-                            <div class=" col-sm-9 ">
+                            <div class="col-sm-9">
                                 {{ form_widget(form.name) }}
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
+                            <label class="col-sm-4 control-label col-sm-2 control-label">{{ form_label(form.cluster) }}</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.cluster) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
                             <label class="col-sm-4 control-label col-sm-2 control-label">{{ form_label(form.description) }}</label>
-                            <div class=" col-sm-9 ">
+                            <div class="col-sm-9">
                                 {{ form_widget(form.description) }}
                             </div>
                         </div>
@@ -31,7 +39,7 @@
                     <div class="form-group">
                         <div class="row">
                             <label class="col-sm-4 control-label col-sm-2 control-label">{{ form_label(form.host) }}</label>
-                            <div class=" col-sm-9 ">
+                            <div class="col-sm-9">
                                 {{ form_widget(form.host) }}
                             </div>
                         </div>
@@ -39,7 +47,7 @@
                     <div class="form-group">
                         <div class="row">
                             <label class="col-sm-4 control-label col-sm-2 control-label">{{ form_label(form.port) }}</label>
-                            <div class=" col-sm-9 ">
+                            <div class="col-sm-9">
                                 {{ form_widget(form.port) }}
                             </div>
                         </div>
@@ -47,18 +55,16 @@
                     <div class="form-group">
                         <div class="row">
                             <label class="col-sm-4 control-label col-sm-2 control-label">{{ form_label(form.user) }}</label>
-                            <div class=" col-sm-9 ">
+                            <div class="col-sm-9">
                                 {{ form_widget(form.user) }}
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <label class="col-sm-4 control-label col-sm-2 control-label">{{ form_label(form.password) }}</label>
-                            <div class=" col-sm-9 ">
-                                {{ form_widget(form.password) }}
-                            </div>
-                            <button id="btn-edit-password" type="button" class="btn btn-outline btn-info" data-toggle="modal" data-target="#edit-password-modal">
+                    <div class="row">
+                        <div class="col-sm-4 control-label col-sm-2 control-label">{{ 'field.password.label' | trans | capitalize }}</div>
+                        <div class="col-sm-9">
+                            **************
+                            <button id="btn-edit-password" type="button" class="btn btn-outline btn-info btn-sm" data-toggle="modal" data-target="#edit-password-modal">
                                 <i class="fa fa-edit"></i>
                             </button>
                         </div>
@@ -94,7 +100,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">{{ 'action.close' | trans | capitalize }}</button>
+                    <button class="btn btn-outline btn-warning" type="button" data-dismiss="modal">{{ 'action.close' | trans | capitalize }}</button>
                     <button id="btn-save-edit-password" class="btn btn-outline btn-info" type="button">
                         <i class="fa fa-check"></i>
                         {{ 'action.confirm' | trans | capitalize }}
@@ -109,11 +115,14 @@
 <script type="text/javascript">
     $(document).ready(function() {
         const $editPasswordModal = $('#edit-password-modal');
+
+        $('select.select2').select2();
+
         $editPasswordModal.on('show.bs.modal', function (e) {
-            $('#edit-password-input').val($('#server_password').val());
+            $('#edit-password-input').val('');
         });
         $('#btn-save-edit-password').on('click', function () {
-            $('#server_password').val($('#edit-password-input').val());
+            $('#server_password-edit').val($('#edit-password-input').val());
             $editPasswordModal.modal('hide');
         });
     });

@@ -1,3 +1,6 @@
+imports:
+    - { resource: "../../vendor/beberlei/doctrineextensions/config/mysql.yml" }
+
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
