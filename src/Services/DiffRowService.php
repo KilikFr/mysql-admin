@@ -50,7 +50,12 @@ class DiffRowService
                 if ('' != $dataFields) {
                     $dataFields .= ',';
                 }
-                $dataFields .= sprintf('`%s`', $field->getField());
+                $dataFields.="'". $field->getField()."'";
+                if ($field->isNullable()) {
+                    $dataFields .= sprintf(",IFNULL(`%s`,'')", $field->getField());
+                } else {
+                    $dataFields .= sprintf(',`%s`', $field->getField());
+                }
             }
         }
         // case for many to many tables with no real data columns
@@ -59,36 +64,31 @@ class DiffRowService
         }
 
         if (count($primaryFields) > 1) {
-            $composedFields = '';
-            $orderComposedFields = '';
+            $selectIdKeys= '';
+            $orderById = '';
             foreach ($primaryFields as $primaryField) {
-                if ('' !== $composedFields) {
-                    $composedFields .= ",'-',";
-                    $orderComposedFields .= ',';
+                if ('' !== $selectIdKeys) {
+                    $selectIdKeys .= ",'-',";
+                    $orderById .= ',';
                 }
-                $composedFields .= '`'.$primaryField->getField().'`';
-                $orderComposedFields .= '`'.$primaryField->getField().'`';
+                $selectIdKeys .= '`'.$primaryField->getField().'`';
+                $orderById .= '`'.$primaryField->getField().'`';
             }
-            $query = sprintf(
-                'SELECT CONCAT(%s) AS id, MD5(CONCAT(%s)) AS hash FROM `%s`.`%s` WHERE %s ORDER BY %s',
-                $composedFields,
-                $dataFields,
-                $table->getDatabase(),
-                $table->getName(),
-                $where,
-                $orderComposedFields,
-            );
+            $selectId=sprintf('CONCAT(%s)',$selectIdKeys);
         } else {
-            $query = sprintf(
-                'SELECT `%s` AS id, MD5(CONCAT(%s)) AS hash FROM `%s`.`%s` WHERE %s ORDER BY `%s`',
-                $primaryFields[0]->getField(),
-                $dataFields,
-                $table->getDatabase(),
-                $table->getName(),
-                $where,
-                $primaryFields[0]->getField(),
-            );
+            $selectId= $primaryFields[0]->getField();
+            $orderById = $primaryFields[0]->getField();
         }
+
+        $query = sprintf(
+            'SELECT %s AS id, MD5(CONCAT(%s)) AS hash FROM `%s`.`%s` WHERE %s ORDER BY %s',
+            $selectId,
+            $dataFields,
+            $table->getDatabase(),
+            $table->getName(),
+            $where,
+            $orderById,
+        );
 
         $stmt = $connection->query($query, \PDO::FETCH_NUM);
         if (false === $stmt) {
