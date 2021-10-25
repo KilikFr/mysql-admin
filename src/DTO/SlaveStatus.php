@@ -856,8 +856,8 @@ class SlaveStatus
             'Slave_SQL_Running' => 'YesNo',
             'Master_SSL_Allowed' => 'YesNo',
             'Master_SSL_Verify_Server_Cert' => 'YesNo',
-            'Last_IO_Error_Timestamp' => 'int_null',
-            'Last_SQL_Error_Timestamp' => 'int_null',
+            'Last_IO_Error_Timestamp' => 'timestamp_null',
+            'Last_SQL_Error_Timestamp' => 'timestamp_null',
         ];
         foreach ($row as $key => $rawValue) {
             if (isset($fields[$key])) {
@@ -877,8 +877,8 @@ class SlaveStatus
                                     $value = null;
                             }
                             break;
-                        case 'int_null':
-                            $value = ('' === $rawValue ? null : $rawValue + 0);
+                        case 'timestamp_null':
+                            $value = ('' === $rawValue ? null : \DateTime::createFromFormat('ymd H:i:s', $rawValue)->getTimestamp());
                             break;
                         default:
                             throw new \Exception(sprintf('unsupported transformer %s', $transforms[$key]));

@@ -9,6 +9,9 @@ field:
     label: name
   description:
     label: description
+  channel:
+    label: channel
+    labels: channels
   cluster:
     label: cluster
     labels: clusters
@@ -22,6 +25,8 @@ field:
     label: user
   password:
     label: password
+  replication:
+    label: replication
   server:
     label: server
     labels: servers
@@ -59,6 +64,20 @@ message:
     success: Server successfully deleted
   serverSaved:
     success: Server successfully saved
+  startSlave:
+    success: Slave successfully started
+    error: Error while starting slave
+  startSlaves:
+    success: Slaves successfully started
+    error: Error while starting slaves
+  stopSlave:
+    success: Slave successfully stopped
+    error: Error while stopped slave
+  stopSlaves:
+    success: Slaves successfully stopped
+    error: Error while stopped slaves
+  refreshSlavesStatus:
+    error: Error while resfresh slaves status
 
 title:
   deleteConfirmDialog: Delete confirmation

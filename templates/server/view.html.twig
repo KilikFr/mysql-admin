@@ -60,35 +60,184 @@
                         {% endif %}
                     </div>
                 </div>
+                <div>
+                    <a href="{{ path("server_list") }}" class="btn btn-outline btn-warning">
+                        <i class="fa fa-arrow-left"></i> {{ "action.back" | trans | capitalize }}
+                    </a>
+                    <a href="{{ path("server_edit", {"server": server.name }) }}" class="btn btn-outline btn-info">
+                        <i class="fa fa-edit"></i> {{ "action.edit" | trans | capitalize }}
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">{{ 'field.slave.labels' | trans | capitalize }}</h6>
-                </div>
-                <div class="card-body">
-                    {% if server.slaves is not empty %}
-                    <ul>
-                    {% for slave in server.slaves %}
-                        <li>{{ slave.server.name }} on channel {{ slave.channelName }}</li>
-                    {% endfor %}
-                    </ul>
-                    {% else %}
-                        {{ 'word.none' | trans | capitalize }}
+        <div class="card card-replication shadow mb-4">
+            <div class="card-header py-3">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h6 class="m-0 font-weight-bold text-primary">{{ 'field.replication.label' | trans | capitalize }}
+                            <div class="replication-container-loader spinner-border spinner-border-sm text-primary" style="display: none;" role="status"></div>
+                        </h6>
+                    </div>
+                    {% if server.slaves | length >= 1 %}
+                    <div class="col-md-2">
+                        <div style="float: right">
+                            <a href="javascript:startSlaves()" class="btn btn-sm btn-success btn-circle" title="Start slaves">
+                                <i class="fas fa-play"></i>
+                            </a>
+                            <a href="javascript:stopSlaves()" class="btn btn-sm btn-danger btn-circle" title="Stop slaves">
+                                <i class="fas fa-pause"></i>
+                            </a>
+                        </div>
+                    </div>
                     {% endif %}
                 </div>
             </div>
+            <div class="card-body">
+                {% if server.slaves | length < 1 %}
+                    {{ 'word.none' | trans | capitalize }}
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
 
-<a href="{{ path("server_list") }}" class="btn btn-outline btn-warning">
-    <i class="fa fa-arrow-left"></i> {{ "action.back" | trans | capitalize }}
-</a>
-<a href="{{ path("server_edit", {"server": server.name }) }}" class="btn btn-outline btn-info">
-    <i class="fa fa-edit"></i> {{ "action.edit" | trans | capitalize }}
-</a>
+{% block javascript %}
+{{ parent() }}
+{% if server.slaves | length >= 1 %}
+<script type="text/javascript" >
+    const $replicationContainer = $('.card-replication');
+
+    function displayLoader() {
+        $replicationContainer.css('pointer-events', 'none');
+        $('.replication-container-loader').show();
+    }
+
+    function hideLoader() {
+        $replicationContainer.css('pointer-events', 'auto');
+        $('.replication-container-loader').hide();
+    }
+
+    function refreshSlavesStatus() {
+        displayLoader();
+         $.ajax({
+            type: 'get',
+            url: "{{ path("server_slaves_status_ajax", { 'server': server.name }) }}",
+            success: function (jsonResponse) {
+                if (jsonResponse.isSuccess) {
+                    $replicationContainer.find('.card-body').html(jsonResponse.html);
+                    hideLoader();
+                } else {
+                    $.notify("{{ 'message.refreshSlavesStatus.error' | trans | capitalize }}", "error");
+                    hideLoader();
+                }
+            },
+            error: function () {
+                $.notify("{{ 'message.refreshSlavesStatus.error' | trans | capitalize }}", "error");
+                hideLoader();
+            },
+        });
+    }
+
+    function startSlaves() {
+        displayLoader();
+         $.ajax({
+            type: 'get',
+            url: "{{ path("server_slaves_start_ajax", { 'server': server.name }) }}",
+            success: function (jsonResponse) {
+                if (jsonResponse.isSuccess) {
+                    refreshSlavesStatus();
+                    $.notify("{{ 'message.startSlaves.success' | trans | capitalize }}", "success");
+                    hideLoader();
+                } else {
+                    $.notify("{{ 'message.startSlaves.error' | trans | capitalize }}", "error");
+                    hideLoader();
+                }
+            },
+            error: function () {
+                $.notify("{{ 'message.startSlaves.error' | trans | capitalize }}", "error");
+                hideLoader();
+            },
+        });
+    }
+
+    function stopSlaves() {
+        displayLoader();
+         $.ajax({
+            type: 'get',
+            url: "{{ path("server_slaves_stop_ajax", { 'server': server.name }) }}",
+            success: function (jsonResponse) {
+                if (jsonResponse.isSuccess) {
+                    refreshSlavesStatus();
+                    $.notify("{{ 'message.stopSlaves.success' | trans | capitalize }}", "success");
+                    hideLoader();
+                } else {
+                    $.notify("{{ 'message.stopSlaves.error' | trans | capitalize }}", "error");
+                    hideLoader();
+                }
+            },
+            error: function () {
+                $.notify("{{ 'message.stopSlaves.error' | trans | capitalize }}", "error");
+                hideLoader();
+            },
+        });
+    }
+
+    function startSlaveForChannel(channel) {
+        displayLoader();
+        let url = "{{ path("server_slave_channel_start_ajax", { 'server': server.name, 'channel': 'channel_name' }) }}";
+        url = url.replace("channel_name", channel);
+         $.ajax({
+            type: 'get',
+            url: url,
+            success: function (jsonResponse) {
+                if (jsonResponse.isSuccess) {
+                    refreshSlavesStatus();
+                    $.notify("{{ 'message.startSlave.success' | trans | capitalize }}", "success");
+                    hideLoader();
+                } else {
+                    $.notify("{{ 'message.startSlave.error' | trans | capitalize }}", "error");
+                    hideLoader();
+                }
+            },
+            error: function () {
+                $.notify("{{ 'message.startSlave.error' | trans | capitalize }}", "error");
+                hideLoader();
+            },
+        });
+    }
+
+    function stopSlaveForChannel(channel) {
+        let url = "{{ path("server_slave_channel_stop_ajax", { 'server': server.name, 'channel': 'channel_name' }) }}";
+        displayLoader();
+        url = url.replace("channel_name", channel);
+         $.ajax({
+            type: 'get',
+            url: url,
+            success: function (jsonResponse) {
+                if (jsonResponse.isSuccess) {
+                    refreshSlavesStatus();
+                    $.notify("{{ 'message.stopSlave.success' | trans | capitalize }}", "success");
+                    hideLoader();
+                } else {
+                    $.notify("{{ 'message.stopSlave.error' | trans | capitalize }}", "error");
+                    hideLoader();
+                }
+            },
+            error: function () {
+                $.notify("{{ 'message.stopSlave.error' | trans | capitalize }}", "error");
+                hideLoader();
+            },
+        });
+    }
+
+    $(document).ready(function () {
+        refreshSlavesStatus();
+    });
+    {% endif %}
+</script>
 {% endblock %}
