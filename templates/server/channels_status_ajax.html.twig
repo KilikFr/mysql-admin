@@ -18,10 +18,10 @@
                         </div>
                         <div class="col-md-4">
                             <a href="javascript:startSlaveForChannel({{ slave.channelName }})" class="btn btn-success btn-circle" title="Start slave for this channel">
-                                <i class="fas fa-check"></i>
+                                <i class="fa fa-play"></i>
                             </a>
                             <a href="javascript:stopSlaveForChannel({{ slave.channelName }})" class="btn btn-danger btn-circle" title="Stop slave for this channel">
-                                <i class="fas fa-times"></i>
+                                <i class="fa fa-pause"></i>
                             </a>
                             <a href="#" class="btn btn-info btn-circle" data-toggle="modal" data-target="#slave-status-modal-{{ slave.channelName }}" title="Display complete slave status">
                                 <i class="fas fa-eye"></i>
@@ -48,7 +48,10 @@
                             <div><span class="text-gray-800">Master Log Pos</span> : {% if slave.readMasterLogPos is not empty %}{{ slave.readMasterLogPos }}{% else %}-{% endif %}</div>
                             <div><span class="text-gray-800">Relay Log File</span> : {% if slave.relayLogFile is not empty %}{{ slave.relayLogFile }}{% else %}-{% endif %}</div>
                             <div><span class="text-gray-800">Relay Log Pos</span> : {% if slave.relayLogPos is not empty %}{{ slave.relayLogPos }}{% else %}-{% endif %}</div>
+                            <div><span class="text-gray-800">Last IO Errno</span> : {% if slave.lastIOErrno is not empty %}{{ slave.lastIOErrno }}{% else %}-{% endif %}</div>
                             <div><span class="text-gray-800">Last IO Error</span> : {% if slave.lastIOError is not empty %}{{ slave.lastIOError }}{% else %}-{% endif %}</div>
+                            <div><span class="text-gray-800">Last SQL Errno</span> : {% if slave.lastSQLErrno is not empty %}{{ slave.lastSQLErrno }}{% else %}-{% endif %}</div>
+                            <div><span class="text-gray-800">Last SQL Error</span> : {% if slave.lastSQLError is not empty %}{{ slave.lastSQLError }}{% else %}-{% endif %}</div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-outline btn-warning" type="button" data-dismiss="modal">{{ 'action.close' | trans | capitalize }}</button>
