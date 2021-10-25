@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Server;
+use App\Entity\Slave;
 use App\Form\ServerType;
+use App\Services\ServerService;
+use App\Services\SlaveService;
 use Kilik\TableBundle\Components\Column;
 use Kilik\TableBundle\Components\Filter;
 use Kilik\TableBundle\Components\Table;
@@ -11,6 +14,7 @@ use Kilik\TableBundle\Services\TableService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -210,7 +214,7 @@ class ServerController extends AbstractController
      * @return array
      * @Template()
      */
-    public function view(Server $server)
+    public function view(Server $server, SlaveService $slaveService)
     {
         return [
             'server' => $server,
@@ -245,5 +249,113 @@ class ServerController extends AbstractController
             'isDeletable' => true,
             'deleteConfirmationText' => $this->translator->trans('message.serverDeleteConfirmation'),
         ];
+    }
+
+    /**
+     * @Route("/{server}/channels/status", name="server_slaves_status_ajax", methods={"GET"})
+     * @ParamConverter("server", options={"mapping": {"server" : "name"}})
+     *
+     * @return JsonResponse
+     */
+    public function slavesStatusRender(Server $server, SlaveService $slaveService): JsonResponse
+    {
+        $slaveStatuses = [];
+        $isSuccess = true;
+
+        try {
+            $slaveStatuses = $slaveService->scanSlaves($server);
+        } catch (\Exception $e) {
+            $isSuccess = false;
+        }
+        return new JsonResponse(
+            [
+                'isSuccess' => $isSuccess,
+                'html' => $this->render('server/channels_status_ajax.html.twig', ['slaveStatuses' => $slaveStatuses])->getContent(),
+            ]
+        );
+    }
+
+    /**
+     * @Route("/{server}/slaves/start", name="server_slaves_start_ajax", methods={"GET"})
+     * @ParamConverter("server", options={"mapping": {"server" : "name"}})
+     *
+     * @return JsonResponse
+     */
+    public function startSlaves(Server $server, ServerService $serverService): JsonResponse
+    {
+        try {
+            $serverService->startSlaves($server);
+        } catch (\Exception $e) {
+            return new JsonResponse(['isSuccess' => false]);
+        }
+
+        return new JsonResponse(['isSuccess' => true]);
+    }
+
+    /**
+     * @Route("/{server}/slaves/stop", name="server_slaves_stop_ajax", methods={"GET"})
+     * @ParamConverter("server", options={"mapping": {"server" : "name"}})
+     *
+     * @return JsonResponse
+     */
+    public function stopSlaves(Server $server, ServerService $serverService): JsonResponse
+    {
+        try {
+            $serverService->stopSlaves($server);
+        } catch (\Exception $e) {
+            return new JsonResponse(['isSuccess' => false]);
+        }
+
+        return new JsonResponse(['isSuccess' => true]);
+    }
+
+    /**
+     * @Route("/{server}/slave/channel/{{channel}}/start", name="server_slave_channel_start_ajax", methods={"GET"})
+     * @ParamConverter("server", options={"mapping": {"server" : "name"}})
+     *
+     * @return JsonResponse
+     */
+    public function startSlaveForChannel(Server $server, int $channel, SlaveService $slaveService): JsonResponse
+    {
+        $slave = $this->getDoctrine()->getRepository(Slave::class)->findOneBy(
+            ['server' => $server, 'channelName' => $channel]
+        );
+
+        if ($slave === null) {
+            return new JsonResponse(['isSuccess' => false]);
+        }
+
+        try {
+            $slaveService->startSlave($slave);
+        } catch (\Exception $e) {
+            return new JsonResponse(['isSuccess' => false]);
+        }
+
+        return new JsonResponse(['isSuccess' => true]);
+    }
+
+    /**
+     * @Route("/{server}/slave/channel/{{channel}}/stop", name="server_slave_channel_stop_ajax", methods={"GET"})
+     * @ParamConverter("server", options={"mapping": {"server" : "name"}})
+     *
+     * @return JsonResponse
+     */
+    public function stopSlaveForChannel(Server $server, int $channel, SlaveService $slaveService): JsonResponse
+    {
+        $slave = $this->getDoctrine()->getRepository(Slave::class)->findOneBy(
+            ['server' => $server, 'channelName' => $channel]
+        );
+
+        if ($slave === null) {
+            return new JsonResponse(['isSuccess' => false]);
+        }
+
+        try {
+            $slaveService->stopSlave($slave);
+        } catch (\Exception $e) {
+            return new JsonResponse(['isSuccess' => false]);
+        }
+
+        return new JsonResponse(['isSuccess' => true]);
     }
 }

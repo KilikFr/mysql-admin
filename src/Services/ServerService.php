@@ -264,4 +264,34 @@ class ServerService
 
         return $table;
     }
+
+    public function startSlaves(Server $server)
+    {
+        $connection = $this->connectionService->getServerConnection($server);
+
+        $stmt = $connection->query(
+            'START SLAVE',
+            \PDO::FETCH_ASSOC
+        );
+
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+    }
+
+    public function stopSlaves(Server $server)
+    {
+        $connection = $this->connectionService->getServerConnection($server);
+
+        $stmt = $connection->query(
+            'STOP SLAVE',
+            \PDO::FETCH_ASSOC
+        );
+
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+    }
 }

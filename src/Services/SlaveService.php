@@ -123,6 +123,36 @@ class SlaveService
         }
     }
 
+    public function startSlave(Slave $slave)
+    {
+        $connection = $this->connectionService->getServerConnection($slave->getServer());
+
+        $stmt = $connection->query(
+            sprintf("START SLAVE FOR CHANNEL '%s'", $slave->getChannelName()),
+            \PDO::FETCH_ASSOC
+        );
+
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+    }
+
+    public function stopSlave(Slave $slave)
+    {
+        $connection = $this->connectionService->getServerConnection($slave->getServer());
+
+        $stmt = $connection->query(
+            sprintf("STOP SLAVE FOR CHANNEL '%s'", $slave->getChannelName()),
+            \PDO::FETCH_ASSOC
+        );
+
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+    }
+
     public function save(Slave $slave, bool $flush = false)
     {
         $slave->setUpdatedAt(new \DateTime());
