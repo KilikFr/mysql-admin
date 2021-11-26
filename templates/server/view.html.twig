@@ -82,7 +82,7 @@
                             <div class="replication-container-loader spinner-border spinner-border-sm text-primary" style="display: none;" role="status"></div>
                         </h6>
                     </div>
-                    {% if server.slaves | length >= 1 %}
+                    {% if server.channels | length >= 1 %}
                     <div class="col-md-2">
                         <div style="float: right">
                             <a href="javascript:startSlaves()" class="btn btn-sm btn-success btn-circle" title="Start slaves">
@@ -97,7 +97,7 @@
                 </div>
             </div>
             <div class="card-body">
-                {% if server.slaves | length < 1 %}
+                {% if server.channels | length < 1 %}
                     {{ 'word.none' | trans | capitalize }}
                 {% endif %}
             </div>
@@ -108,7 +108,7 @@
 
 {% block javascript %}
 {{ parent() }}
-{% if server.slaves | length >= 1 %}
+{% if server.channels | length >= 1 %}
 <script type="text/javascript" >
     const $replicationContainer = $('.card-replication');
 
