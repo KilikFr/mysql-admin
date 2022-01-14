@@ -15,6 +15,8 @@
                             <div>Slave IO Running : {% if slave.slaveIoRunning %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}</div>
                             <div>Slave SQL Running : {% if slave.slaveSqlRunning %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger">{% endif %}</i></div>
                             <div>Slave IO State : {% if slave.slaveIoState is not empty %}{{ slave.slaveIoState }}{% else %}-{% endif %}</div>
+                            <div>Master Log File : {% if slave.masterLogFile is not empty %}{{ slave.masterLogFile }}{% else %}-{% endif %}</div>
+                            <div>Master Log Pos : {% if slave.readMasterLogPos is not empty %}{{ slave.readMasterLogPos }}{% else %}-{% endif %}</div>
                         </div>
                         <div class="col-md-4">
                             <a href="javascript:startSlaveForChannel({{ slave.channelName }})" class="btn btn-success btn-circle" title="Start slave for this channel">
@@ -41,8 +43,8 @@
                         </div>
                         <div class="modal-body">
                             <div><span class="text-gray-800">Master</span> : {{ slave.masterHost }}</div>
-                            <div><span class="text-gray-800">Slave IO Running</span> : {% if slave.slaveIoRunning %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}</div>
-                            <div><span class="text-gray-800">Slave SQL Running</span> : {% if slave.slaveSqlRunning %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger">{% endif %}</i></div>
+                            <div><span class="text-gray-800">Slave IO Running</span> : {% if slave.slaveIoRunning %}Yes <i class="fa fa-check text-success"></i>{% else %}No <i class="fa fa-times text-danger"></i>{% endif %}</div>
+                            <div><span class="text-gray-800">Slave SQL Running</span> : {% if slave.slaveSqlRunning %}Yes <i class="fa fa-check text-success"></i>{% else %}No <i class="fa fa-times text-danger"></i>{% endif %}</div>
                             <div><span class="text-gray-800">Slave IO State</span> : {% if slave.slaveIoState is not empty %}{{ slave.slaveIoState }}{% else %}-{% endif %}</div>
                             <div><span class="text-gray-800">Master Log File</span> : {% if slave.masterLogFile is not empty %}{{ slave.masterLogFile }}{% else %}-{% endif %}</div>
                             <div><span class="text-gray-800">Master Log Pos</span> : {% if slave.readMasterLogPos is not empty %}{{ slave.readMasterLogPos }}{% else %}-{% endif %}</div>
@@ -54,6 +56,9 @@
                             <div><span class="text-gray-800">Last SQL Error</span> : {% if slave.lastSQLError is not empty %}{{ slave.lastSQLError }}{% else %}-{% endif %}</div>
                         </div>
                         <div class="modal-footer">
+                            <button type="button" onclick="copyChannelStatusToClipboard({{ slave.channelName }})" class="btn btn-outline btn-info btn-copy" id="btn-copy-slave-{{ slave.channelName }}" data-slave-channel="{{ slave.channelName }}">
+                                <i class="fa fa-copy"></i> {{ "action.copy" | trans | capitalize }}
+                            </button>
                             <button class="btn btn-outline btn-warning" type="button" data-dismiss="modal">{{ 'action.close' | trans | capitalize }}</button>
                         </div>
                     </div>

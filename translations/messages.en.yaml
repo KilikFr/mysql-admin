@@ -47,6 +47,7 @@ action:
   back: back
   cancel: cancel
   close: close
+  copy: copy
   confirm: confirm
   delete: delete
   edit: edit
@@ -59,6 +60,8 @@ message:
     success: Cluster successfully deleted
   clusterSaved:
     success: Cluster successfully saved
+  copyToClipboard:
+    success: Copy to clipboard
   serverDeleteConfirmation: Are you sure to delete sever ?
   serverDelete:
     success: Server successfully deleted
