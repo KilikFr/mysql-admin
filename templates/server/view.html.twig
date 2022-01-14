@@ -91,6 +91,9 @@
                             <a href="javascript:stopSlaves()" class="btn btn-sm btn-danger btn-circle" title="Stop slaves">
                                 <i class="fas fa-pause"></i>
                             </a>
+                            <a href="javascript:refreshSlavesStatus()" class="btn btn-sm btn-info btn-circle" title="Refresh slaves status">
+                                <i class="fas fa-sync"></i>
+                            </a>
                         </div>
                     </div>
                     {% endif %}
@@ -233,6 +236,11 @@
                 hideLoader();
             },
         });
+    }
+
+    function copyChannelStatusToClipboard(channel) {
+        navigator.clipboard.writeText($('#slave-status-modal-'+channel).find('.modal-body').text());
+        $.notify("{{ 'message.copyToClipboard.success' | trans | capitalize }}", "success");
     }
 
     $(document).ready(function () {
