@@ -11,12 +11,14 @@ use Kilik\TableBundle\Components\Column;
 use Kilik\TableBundle\Components\Filter;
 use Kilik\TableBundle\Components\Table;
 use Kilik\TableBundle\Services\TableService;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -26,10 +28,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ServerController extends AbstractController
 {
     private TranslatorInterface $translator;
+    private LoggerInterface $logger;
 
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(TranslatorInterface $translator, LoggerInterface $logger)
     {
         $this->translator = $translator;
+        $this->logger = $logger;
     }
 
     private function getTable()
@@ -259,17 +263,18 @@ class ServerController extends AbstractController
      */
     public function slavesStatusRender(Server $server, SlaveService $slaveService): JsonResponse
     {
-        $slaveStatuses = [];
-        $isSuccess = true;
-
         try {
-            $slaveStatuses = $slaveService->scanSlaves($server);
+            $slaveStatuses = $slaveService->showSlaveStatus($server);
         } catch (\Exception $e) {
-            $isSuccess = false;
+            $this->logger->error('Error while render slaves status', [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'exception' => $e->getMessage(),
+            ]);
+            return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return new JsonResponse(
             [
-                'isSuccess' => $isSuccess,
                 'html' => $this->render('server/channels_status_ajax.html.twig', ['slaveStatuses' => $slaveStatuses])->getContent(),
             ]
         );
@@ -286,10 +291,15 @@ class ServerController extends AbstractController
         try {
             $serverService->startSlaves($server);
         } catch (\Exception $e) {
-            return new JsonResponse(['isSuccess' => false]);
+            $this->logger->error('Error while start slaves', [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'exception' => $e->getMessage(),
+            ]);
+            return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return new JsonResponse(['isSuccess' => true]);
+        return new JsonResponse(null, Response::HTTP_OK);
     }
 
     /**
@@ -303,10 +313,15 @@ class ServerController extends AbstractController
         try {
             $serverService->stopSlaves($server);
         } catch (\Exception $e) {
-            return new JsonResponse(['isSuccess' => false]);
+            $this->logger->error('Error while stop slaves', [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'exception' => $e->getMessage(),
+            ]);
+            return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return new JsonResponse(['isSuccess' => true]);
+        return new JsonResponse(null, Response::HTTP_OK);
     }
 
     /**
@@ -322,16 +337,27 @@ class ServerController extends AbstractController
         );
 
         if ($slave === null) {
-            return new JsonResponse(['isSuccess' => false]);
+            $this->logger->error('slave for server '.$server->getName().' and channel '.$channel.' not found', [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'channel' => $channel,
+            ]);
+            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
         }
 
         try {
             $slaveService->startSlave($slave);
         } catch (\Exception $e) {
-            return new JsonResponse(['isSuccess' => false]);
+            $this->logger->error('Error while start slave for channel '.$channel, [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'channel' => $channel,
+                'exception' => $e->getMessage(),
+            ]);
+            return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return new JsonResponse(['isSuccess' => true]);
+        return new JsonResponse(null, Response::HTTP_OK);
     }
 
     /**
@@ -347,15 +373,26 @@ class ServerController extends AbstractController
         );
 
         if ($slave === null) {
-            return new JsonResponse(['isSuccess' => false]);
+            $this->logger->error('slave for server '.$server->getName().' and channel '.$channel.' not found', [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'channel' => $channel,
+            ]);
+            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
         }
 
         try {
             $slaveService->stopSlave($slave);
         } catch (\Exception $e) {
-            return new JsonResponse(['isSuccess' => false]);
+            $this->logger->error('Error while stop slave for channel '.$channel, [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'channel' => $channel,
+                'exception' => $e->getMessage(),
+            ]);
+            return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return new JsonResponse(['isSuccess' => true]);
+        return new JsonResponse(null, Response::HTTP_OK);
     }
 }

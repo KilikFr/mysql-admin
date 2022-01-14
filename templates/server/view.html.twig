@@ -131,13 +131,8 @@
             type: 'get',
             url: "{{ path("server_slaves_status_ajax", { 'server': server.name }) }}",
             success: function (jsonResponse) {
-                if (jsonResponse.isSuccess) {
-                    $replicationContainer.find('.card-body').html(jsonResponse.html);
-                    hideLoader();
-                } else {
-                    $.notify("{{ 'message.refreshSlavesStatus.error' | trans | capitalize }}", "error");
-                    hideLoader();
-                }
+                $replicationContainer.find('.card-body').html(jsonResponse.html);
+                hideLoader();
             },
             error: function () {
                 $.notify("{{ 'message.refreshSlavesStatus.error' | trans | capitalize }}", "error");
@@ -151,15 +146,10 @@
          $.ajax({
             type: 'get',
             url: "{{ path("server_slaves_start_ajax", { 'server': server.name }) }}",
-            success: function (jsonResponse) {
-                if (jsonResponse.isSuccess) {
-                    refreshSlavesStatus();
-                    $.notify("{{ 'message.startSlaves.success' | trans | capitalize }}", "success");
-                    hideLoader();
-                } else {
-                    $.notify("{{ 'message.startSlaves.error' | trans | capitalize }}", "error");
-                    hideLoader();
-                }
+            success: function () {
+                refreshSlavesStatus();
+                $.notify("{{ 'message.startSlaves.success' | trans | capitalize }}", "success");
+                hideLoader();
             },
             error: function () {
                 $.notify("{{ 'message.startSlaves.error' | trans | capitalize }}", "error");
@@ -173,15 +163,10 @@
          $.ajax({
             type: 'get',
             url: "{{ path("server_slaves_stop_ajax", { 'server': server.name }) }}",
-            success: function (jsonResponse) {
-                if (jsonResponse.isSuccess) {
-                    refreshSlavesStatus();
-                    $.notify("{{ 'message.stopSlaves.success' | trans | capitalize }}", "success");
-                    hideLoader();
-                } else {
-                    $.notify("{{ 'message.stopSlaves.error' | trans | capitalize }}", "error");
-                    hideLoader();
-                }
+            success: function () {
+                refreshSlavesStatus();
+                $.notify("{{ 'message.stopSlaves.success' | trans | capitalize }}", "success");
+                hideLoader();
             },
             error: function () {
                 $.notify("{{ 'message.stopSlaves.error' | trans | capitalize }}", "error");
@@ -197,15 +182,10 @@
          $.ajax({
             type: 'get',
             url: url,
-            success: function (jsonResponse) {
-                if (jsonResponse.isSuccess) {
-                    refreshSlavesStatus();
-                    $.notify("{{ 'message.startSlave.success' | trans | capitalize }}", "success");
-                    hideLoader();
-                } else {
-                    $.notify("{{ 'message.startSlave.error' | trans | capitalize }}", "error");
-                    hideLoader();
-                }
+            success: function () {
+                refreshSlavesStatus();
+                $.notify("{{ 'message.startSlave.success' | trans | capitalize }}", "success");
+                hideLoader();
             },
             error: function () {
                 $.notify("{{ 'message.startSlave.error' | trans | capitalize }}", "error");
@@ -222,14 +202,9 @@
             type: 'get',
             url: url,
             success: function (jsonResponse) {
-                if (jsonResponse.isSuccess) {
-                    refreshSlavesStatus();
-                    $.notify("{{ 'message.stopSlave.success' | trans | capitalize }}", "success");
-                    hideLoader();
-                } else {
-                    $.notify("{{ 'message.stopSlave.error' | trans | capitalize }}", "error");
-                    hideLoader();
-                }
+                refreshSlavesStatus();
+                $.notify("{{ 'message.stopSlave.success' | trans | capitalize }}", "success");
+                hideLoader();
             },
             error: function () {
                 $.notify("{{ 'message.stopSlave.error' | trans | capitalize }}", "error");
