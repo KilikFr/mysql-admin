@@ -325,7 +325,7 @@ class ServerController extends AbstractController
     }
 
     /**
-     * @Route("/{server}/slave/channel/{{channel}}/start", name="server_slave_channel_start_ajax", methods={"GET"})
+     * @Route("/{server}/slave/channel/{channel}/start", name="server_slave_channel_start_ajax", methods={"GET"})
      * @ParamConverter("server", options={"mapping": {"server" : "name"}})
      *
      * @return JsonResponse
@@ -361,7 +361,7 @@ class ServerController extends AbstractController
     }
 
     /**
-     * @Route("/{server}/slave/channel/{{channel}}/stop", name="server_slave_channel_stop_ajax", methods={"GET"})
+     * @Route("/{server}/slave/channel/{channel}/stop", name="server_slave_channel_stop_ajax", methods={"GET"})
      * @ParamConverter("server", options={"mapping": {"server" : "name"}})
      *
      * @return JsonResponse
@@ -388,6 +388,55 @@ class ServerController extends AbstractController
                 'server_id' => $server->getId(),
                 'server_name' => $server->getName(),
                 'channel' => $channel,
+                'exception' => $e->getMessage(),
+            ]);
+            return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new JsonResponse(null, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/{server}/slave/channel/{channel}/switch-next-master-log-file", name="server_slave_channel_switch_next_master_log_file_ajax", methods={"POST"})
+     * @ParamConverter("server", options={"mapping": {"server" : "name"}})
+     *
+     * @return JsonResponse
+     */
+    public function switchSlaveToNextMasterLogFileForChannel(Request $request, Server $server, int $channel, SlaveService $slaveService): JsonResponse
+    {
+        $nextMasterLogFile = $request->get('nextMasterLogFile');
+
+        if ($nextMasterLogFile === null) {
+            $this->logger->error('Cannot switch to next position if MasterLogFile is not defined', [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'channel' => $channel,
+            ]);
+            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        }
+
+        $slave = $this->getDoctrine()->getRepository(Slave::class)->findOneBy(
+            ['server' => $server, 'channelName' => $channel]
+        );
+
+        if ($slave === null) {
+            $this->logger->error('slave for server '.$server->getName().' and channel '.$channel.' not found', [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'channel' => $channel,
+            ]);
+            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            $slaveService->switchToNextMasterLogFile($slave, $channel, $nextMasterLogFile);
+        } catch (\Exception $e) {
+            $this->logger->error('Error while switch slave to next master log file for channel '.$channel, [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'channel' => $channel,
+                'next_master_log_file' => $nextMasterLogFile,
+                'next_position' => 0,
                 'exception' => $e->getMessage(),
             ]);
             return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);

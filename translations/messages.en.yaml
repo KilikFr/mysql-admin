@@ -53,6 +53,7 @@ action:
   edit: edit
   enterPassword: enter password
   save: save
+  validate: validate
 
 message:
   clusterDeleteConfirmation: Are you sure to delete cluster ?
@@ -75,12 +76,15 @@ message:
     error: Error while starting slaves
   stopSlave:
     success: Slave successfully stopped
-    error: Error while stopped slave
+    error: Error while stopping slave
   stopSlaves:
     success: Slaves successfully stopped
-    error: Error while stopped slaves
+    error: Error while stopping slaves
+  switchToNextMasterLogFile:
+    success: Master Log File successfully switched to next file
+    error: Error while switching to next Master Log File
   refreshSlavesStatus:
-    error: Error while resfresh slaves status
+    error: Error while resfreshing slaves status
 
 title:
   deleteConfirmDialog: Delete confirmation
