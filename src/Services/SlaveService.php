@@ -162,4 +162,23 @@ class SlaveService
             $this->entityManager->flush();
         }
     }
+
+    public function switchToNextMasterLogFile($slave, int $channel, string $nextMasterLogFile)
+    {
+        $connection = $this->connectionService->getServerConnection($slave->getServer());
+
+        $stmt = $connection->exec(
+            sprintf("STOP SLAVE FOR CHANNEL '%s'; CHANGE MASTER TO MASTER_LOG_FILE='%s', MASTER_LOG_POS=0 FOR CHANNEL '%s'; START SLAVE FOR CHANNEL '%s';",
+                $channel,
+                $nextMasterLogFile,
+                $channel,
+                $channel
+            )
+        );
+
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+    }
 }

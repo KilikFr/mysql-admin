@@ -195,13 +195,13 @@
     }
 
     function stopSlaveForChannel(channel) {
-        let url = "{{ path("server_slave_channel_stop_ajax", { 'server': server.name, 'channel': 'channel_name' }) }}";
         displayLoader();
+        let url = "{{ path("server_slave_channel_stop_ajax", { 'server': server.name, 'channel': 'channel_name' }) }}";
         url = url.replace("channel_name", channel);
          $.ajax({
             type: 'get',
             url: url,
-            success: function (jsonResponse) {
+            success: function () {
                 refreshSlavesStatus();
                 $.notify("{{ 'message.stopSlave.success' | trans | capitalize }}", "success");
                 hideLoader();
@@ -209,6 +209,33 @@
             error: function () {
                 $.notify("{{ 'message.stopSlave.error' | trans | capitalize }}", "error");
                 hideLoader();
+            },
+        });
+    }
+
+    function switchNextMasterLogFile(channel, nextMasterLogFile) {
+        $('#btn-switch-next-master-log-file-'+channel).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>In execution...').attr('disabled', true);
+
+        let url = "{{ path("server_slave_channel_switch_next_master_log_file_ajax", { 'server': server.name, 'channel': 'channel_name' }) }}";
+        url = url.replace("channel_name", channel);
+         $.ajax({
+            type: 'post',
+            url: url,
+            data: {
+                nextMasterLogFile: nextMasterLogFile
+            },
+            success: function () {
+                const $modal = $('#switch-next-master-log-file-modal-'+channel);
+                $modal.modal('hide');
+                $modal.on('hidden.bs.modal', function () {
+                    refreshSlavesStatus();
+                    $.notify("{{ 'message.switchToNextMasterLogFile.success' | trans | capitalize }}", "success");
+                })
+            },
+            error: function () {
+                const $modal = $('#switch-next-master-log-file-modal-'+channel);
+                $modal.modal('hide');
+                $.notify("{{ 'message.switchToNextMasterLogFile.error' | trans | capitalize }}", "error");
             },
         });
     }
