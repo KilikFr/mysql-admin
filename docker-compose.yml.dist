@@ -11,6 +11,10 @@ services:
       - .:/var/www/html:${FS_MOUNT-consistent}
       - ${HOME}:/var/www/home
     hostname: mysql-admin_php
+    deploy:
+      resources:
+        limits:
+          memory: ${PHP_MEM_LIMIT:-2G}
     networks:
       - php
       - mysql
@@ -23,6 +27,10 @@ services:
     volumes:
       - ./public:/var/www/html/public
     hostname: mysql-admin_nginx
+    deploy:
+      resources:
+        limits:
+          memory: ${NGINX_MEM_LIMIT:-1G}
     networks:
       - php
       - webproxy
@@ -39,6 +47,10 @@ services:
       MYSQL_USER: symfony
       MYSQL_PASSWORD: test
     hostname: mysql-admin_mysql
+    deploy:
+      resources:
+        limits:
+          memory: ${MYSQL_MEM_LIMIT:-1G}
     networks:
       - mysql
     volumes:
@@ -47,6 +59,10 @@ services:
   phpmyadmin:
     image: ${PMA_REGISTRY:-phpmyadmin/phpmyadmin}:${PMA_TAG:-5.1}
     hostname: project_phpmyadmin
+    deploy:
+      resources:
+        limits:
+          memory: ${PMA_MEM_LIMIT:-1G}
     networks:
       - webproxy
       - mysql
@@ -59,6 +75,10 @@ services:
   redis:
     image: ${REDIS_REGISTRY:-redis}:${REDIS_TAG:-6-buster}
     hostname: redis
+    deploy:
+      resources:
+        limits:
+          memory: ${REDIS_MEM_LIMIT:-1G}
     networks:
       - php
 
