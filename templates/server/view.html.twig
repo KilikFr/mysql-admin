@@ -14,7 +14,7 @@
                     <div class="row">
                         <div class="col-sm-4"><b>{{ "field.cluster.label" | trans | capitalize }} :</b></div>
                         {% if server.cluster is not null %}
-                            <div class="col-sm-8"> <a href="{{ path("cluster_view", {"cluster": server.cluster.name }) }}">{{ server.cluster.name }}</a></div>
+                            <div class="col-sm-8"><a href="{{ path("cluster_view", {"cluster": server.cluster.name }) }}">{{ server.cluster.name }}</a></div>
                         {% endif %}
                     </div>
                 </div>
@@ -22,7 +22,7 @@
                     <div class="row">
                         <div class="col-sm-4"><b>{{ "field.description.label" | trans | capitalize }} :</b></div>
                         {% if server.description is not null %}
-                        <div class="col-sm-8">{{ server.description }}</div>
+                            <div class="col-sm-8">{{ server.description }}</div>
                         {% endif %}
                     </div>
                 </div>
@@ -42,7 +42,7 @@
                     <div class="row">
                         <div class="col-sm-4"><b>{{ "field.user.label" | trans | capitalize }} :</b></div>
                         {% if server.user is not null %}
-                        <div class="col-sm-8">{{ server.user }}</div>
+                            <div class="col-sm-8">{{ server.user }}</div>
                         {% endif %}
                     </div>
                 </div>
@@ -83,19 +83,19 @@
                         </h6>
                     </div>
                     {% if server.channels | length >= 1 %}
-                    <div class="col-md-2">
-                        <div style="float: right">
-                            <a href="javascript:startSlaves()" class="btn btn-sm btn-success btn-circle" title="Start slaves">
-                                <i class="fas fa-play"></i>
-                            </a>
-                            <a href="javascript:stopSlaves()" class="btn btn-sm btn-danger btn-circle" title="Stop slaves">
-                                <i class="fas fa-pause"></i>
-                            </a>
-                            <a href="javascript:refreshSlavesStatus()" class="btn btn-sm btn-info btn-circle" title="Refresh slaves status">
-                                <i class="fas fa-sync"></i>
-                            </a>
+                        <div class="col-md-2">
+                            <div style="float: right">
+                                <a href="javascript:startSlaves()" class="btn btn-sm btn-success btn-circle" title="Start slaves">
+                                    <i class="fas fa-play"></i>
+                                </a>
+                                <a href="javascript:stopSlaves()" class="btn btn-sm btn-danger btn-circle" title="Stop slaves">
+                                    <i class="fas fa-pause"></i>
+                                </a>
+                                <a href="javascript:refreshSlavesStatus()" class="btn btn-sm btn-info btn-circle" title="Refresh slaves status">
+                                    <i class="fas fa-sync"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -112,7 +112,7 @@
 {% block javascript %}
 {{ parent() }}
 {% if server.channels | length >= 1 %}
-<script type="text/javascript" >
+<script type="text/javascript">
     const $replicationContainer = $('.card-replication');
 
     function displayLoader() {
@@ -127,7 +127,7 @@
 
     function refreshSlavesStatus() {
         displayLoader();
-         $.ajax({
+        $.ajax({
             type: 'get',
             url: "{{ path("server_slaves_status_ajax", { 'server': server.name }) }}",
             success: function (jsonResponse) {
@@ -143,7 +143,7 @@
 
     function startSlaves() {
         displayLoader();
-         $.ajax({
+        $.ajax({
             type: 'get',
             url: "{{ path("server_slaves_start_ajax", { 'server': server.name }) }}",
             success: function () {
@@ -160,7 +160,7 @@
 
     function stopSlaves() {
         displayLoader();
-         $.ajax({
+        $.ajax({
             type: 'get',
             url: "{{ path("server_slaves_stop_ajax", { 'server': server.name }) }}",
             success: function () {
@@ -175,57 +175,59 @@
         });
     }
 
-    function startSlaveForChannel(channel) {
+    function startSlaveForChannel(channel, thread = '') {
         displayLoader();
-        let url = "{{ path("server_slave_channel_start_ajax", { 'server': server.name, 'channel': 'channel_name' }) }}";
-        url = url.replace("channel_name", channel);
-         $.ajax({
+        let url = "{{ path("server_slave_channel_start_ajax", { 'server': server.name, 'channel': 'channel_name', 'thread': 'thread_name' }) }}";
+        url = url.replace("channel_name", channel).replace("thread_name", thread);
+        $.ajax({
             type: 'get',
             url: url,
+            thread: thread,
             success: function () {
                 refreshSlavesStatus();
-                $.notify("{{ 'message.startSlave.success' | trans | capitalize }}", "success");
+                $.notify(("{{ 'message.startSlave.success' | trans | capitalize }}").replace('%thread%', this.thread ? this.thread.split('_')[0] : ''), "success");
                 hideLoader();
             },
             error: function () {
-                $.notify("{{ 'message.startSlave.error' | trans | capitalize }}", "error");
+                $.notify("{{ 'message.startSlave.error' | trans | capitalize }}".replace('%thread%', this.thread ? this.thread.split('_')[0] : ''), "error");
                 hideLoader();
             },
         });
     }
 
-    function stopSlaveForChannel(channel) {
+    function stopSlaveForChannel(channel, thread = '') {
         displayLoader();
-        let url = "{{ path("server_slave_channel_stop_ajax", { 'server': server.name, 'channel': 'channel_name' }) }}";
-        url = url.replace("channel_name", channel);
-         $.ajax({
+        let url = "{{ path("server_slave_channel_stop_ajax", { 'server': server.name, 'channel': 'channel_name', 'thread': 'thread_name' }) }}";
+        url = url.replace("channel_name", channel).replace("thread_name", thread);
+        $.ajax({
             type: 'get',
             url: url,
+            thread: thread,
             success: function () {
                 refreshSlavesStatus();
-                $.notify("{{ 'message.stopSlave.success' | trans | capitalize }}", "success");
+                $.notify(("{{ 'message.stopSlave.success' | trans | capitalize }}").replace('%thread%', this.thread ? this.thread.split('_')[0] : ''), "success");
                 hideLoader();
             },
             error: function () {
-                $.notify("{{ 'message.stopSlave.error' | trans | capitalize }}", "error");
+                $.notify("{{ 'message.stopSlave.error' | trans | capitalize }}".replace('%thread%', this.thread ? this.thread.split('_')[0] : ''), "error");
                 hideLoader();
             },
         });
     }
 
     function switchNextMasterLogFile(channel, nextMasterLogFile) {
-        $('#btn-switch-next-master-log-file-'+channel).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>In execution...').attr('disabled', true);
+        $('#btn-switch-next-master-log-file-' + channel).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>In execution...').attr('disabled', true);
 
         let url = "{{ path("server_slave_channel_switch_next_master_log_file_ajax", { 'server': server.name, 'channel': 'channel_name' }) }}";
         url = url.replace("channel_name", channel);
-         $.ajax({
+        $.ajax({
             type: 'post',
             url: url,
             data: {
                 nextMasterLogFile: nextMasterLogFile
             },
             success: function () {
-                const $modal = $('#switch-next-master-log-file-modal-'+channel);
+                const $modal = $('#switch-next-master-log-file-modal-' + channel);
                 $modal.modal('hide');
                 $modal.on('hidden.bs.modal', function () {
                     refreshSlavesStatus();
@@ -233,7 +235,7 @@
                 })
             },
             error: function () {
-                const $modal = $('#switch-next-master-log-file-modal-'+channel);
+                const $modal = $('#switch-next-master-log-file-modal-' + channel);
                 $modal.modal('hide');
                 $.notify("{{ 'message.switchToNextMasterLogFile.error' | trans | capitalize }}", "error");
             },
@@ -241,7 +243,7 @@
     }
 
     function copyChannelStatusToClipboard(channel) {
-        navigator.clipboard.writeText($('#slave-status-modal-'+channel).find('.modal-body').text());
+        navigator.clipboard.writeText($('#slave-status-modal-' + channel).find('.modal-body').text());
         $.notify("{{ 'message.copyToClipboard.success' | trans | capitalize }}", "success");
     }
 

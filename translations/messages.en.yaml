@@ -69,14 +69,14 @@ message:
   serverSaved:
     success: Server successfully saved
   startSlave:
-    success: Slave successfully started
-    error: Error while starting slave
+    success: Slave %thread% successfully started
+    error: Error while starting %thread% slave
   startSlaves:
     success: Slaves successfully started
     error: Error while starting slaves
   stopSlave:
-    success: Slave successfully stopped
-    error: Error while stopping slave
+    success: Slave %thread% successfully stopped
+    error: Error while stopping slave %thread%
   stopSlaves:
     success: Slaves successfully stopped
     error: Error while stopping slaves
