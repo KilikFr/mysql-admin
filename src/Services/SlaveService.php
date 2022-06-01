@@ -123,12 +123,12 @@ class SlaveService
         }
     }
 
-    public function startSlave(Slave $slave)
+    public function startSlave(Slave $slave, ?string $thread = '')
     {
         $connection = $this->connectionService->getServerConnection($slave->getServer());
 
         $stmt = $connection->query(
-            sprintf("START SLAVE FOR CHANNEL '%s'", $slave->getChannelName()),
+            sprintf("START SLAVE %s FOR CHANNEL '%s'", $thread, $slave->getChannelName()),
             \PDO::FETCH_ASSOC
         );
 
@@ -138,12 +138,12 @@ class SlaveService
         }
     }
 
-    public function stopSlave(Slave $slave)
+    public function stopSlave(Slave $slave, ?string $thread = '')
     {
         $connection = $this->connectionService->getServerConnection($slave->getServer());
 
         $stmt = $connection->query(
-            sprintf("STOP SLAVE FOR CHANNEL '%s'", $slave->getChannelName()),
+            sprintf("STOP SLAVE %s FOR CHANNEL '%s'", $thread, $slave->getChannelName()),
             \PDO::FETCH_ASSOC
         );
 

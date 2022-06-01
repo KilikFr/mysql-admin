@@ -325,12 +325,12 @@ class ServerController extends AbstractController
     }
 
     /**
-     * @Route("/{server}/slave/channel/{channel}/start", name="server_slave_channel_start_ajax", methods={"GET"})
+     * @Route("/{server}/slave/channel/{channel}/start/{thread}", name="server_slave_channel_start_ajax", methods={"GET"})
      * @ParamConverter("server", options={"mapping": {"server" : "name"}})
      *
      * @return JsonResponse
      */
-    public function startSlaveForChannel(Server $server, int $channel, SlaveService $slaveService): JsonResponse
+    public function startSlaveForChannel(Server $server, int $channel, SlaveService $slaveService, ?string $thread = ''): JsonResponse
     {
         $slave = $this->getDoctrine()->getRepository(Slave::class)->findOneBy(
             ['server' => $server, 'channelName' => $channel]
@@ -341,17 +341,19 @@ class ServerController extends AbstractController
                 'server_id' => $server->getId(),
                 'server_name' => $server->getName(),
                 'channel' => $channel,
+                'thread' => $thread,
             ]);
             return new JsonResponse(null, Response::HTTP_NOT_FOUND);
         }
 
         try {
-            $slaveService->startSlave($slave);
+            $slaveService->startSlave($slave, $thread);
         } catch (\Exception $e) {
             $this->logger->error('Error while start slave for channel '.$channel, [
                 'server_id' => $server->getId(),
                 'server_name' => $server->getName(),
                 'channel' => $channel,
+                'thread' => $thread,
                 'exception' => $e->getMessage(),
             ]);
             return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -361,12 +363,12 @@ class ServerController extends AbstractController
     }
 
     /**
-     * @Route("/{server}/slave/channel/{channel}/stop", name="server_slave_channel_stop_ajax", methods={"GET"})
+     * @Route("/{server}/slave/channel/{channel}/stop/{thread}", name="server_slave_channel_stop_ajax", methods={"GET"})
      * @ParamConverter("server", options={"mapping": {"server" : "name"}})
      *
      * @return JsonResponse
      */
-    public function stopSlaveForChannel(Server $server, int $channel, SlaveService $slaveService): JsonResponse
+    public function stopSlaveForChannel(Server $server, int $channel, SlaveService $slaveService, ?string $thread = ''): JsonResponse
     {
         $slave = $this->getDoctrine()->getRepository(Slave::class)->findOneBy(
             ['server' => $server, 'channelName' => $channel]
@@ -377,17 +379,19 @@ class ServerController extends AbstractController
                 'server_id' => $server->getId(),
                 'server_name' => $server->getName(),
                 'channel' => $channel,
+                'thread' => $thread,
             ]);
             return new JsonResponse(null, Response::HTTP_NOT_FOUND);
         }
 
         try {
-            $slaveService->stopSlave($slave);
+            $slaveService->stopSlave($slave, $thread);
         } catch (\Exception $e) {
             $this->logger->error('Error while stop slave for channel '.$channel, [
                 'server_id' => $server->getId(),
                 'server_name' => $server->getName(),
                 'channel' => $channel,
+                'thread' => $thread,
                 'exception' => $e->getMessage(),
             ]);
             return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);

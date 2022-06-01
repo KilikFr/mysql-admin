@@ -19,12 +19,33 @@
                             <div>Master Log Pos : {% if slave.readMasterLogPos is not empty %}{{ slave.readMasterLogPos }}{% else %}-{% endif %}</div>
                         </div>
                         <div class="col-md-4">
-                            <a href="javascript:startSlaveForChannel({{ slave.channelName }})" class="btn btn-success btn-circle" title="Start slave for this channel">
-                                <i class="fa fa-play"></i>
-                            </a>
-                            <a href="javascript:stopSlaveForChannel({{ slave.channelName }})" class="btn btn-danger btn-circle" title="Stop slave for this channel">
-                                <i class="fa fa-pause"></i>
-                            </a>
+                            {% if slave.slaveIoRunning and slave.slaveSqlRunning %}
+                                <a href="javascript:stopSlaveForChannel({{ slave.channelName }})" class="btn btn-info btn-circle" title="Stop all threads for this channel">
+                                    <i class="fa fa-pause"></i>
+                                </a>
+                            {% else %}
+                                <a href="javascript:startSlaveForChannel({{ slave.channelName }})" class="btn btn-info btn-circle" title="Start all threads for this channel">
+                                    <i class="fa fa-play"></i>
+                                </a>
+                            {% endif %}
+                            {% if slave.slaveIoRunning %}
+                                <a href="javascript:stopSlaveForChannel({{ slave.channelName }}, 'IO_THREAD')" class="btn btn-success btn-circle" title="Stop I/O thread for this channel">
+                                    <div data-thread="I/O" class="font-weight-bold small">I/O</div>
+                                </a>
+                            {% else %}
+                                <a href="javascript:startSlaveForChannel({{ slave.channelName }}, 'IO_THREAD')" class="btn btn-danger btn-circle" title="Start I/O thread for this channel">
+                                    <div class="font-weight-bold small">I/O</div>
+                                </a>
+                            {% endif %}
+                            {% if slave.slaveSqlRunning %}
+                                <a href="javascript:stopSlaveForChannel({{ slave.channelName }}, 'SQL_THREAD')" class="btn btn-success btn-circle" title="Stop SQL thread for this channel">
+                                    <div class="font-weight-bold small">SQL</div>
+                                </a>
+                            {% else %}
+                                <a href="javascript:startSlaveForChannel({{ slave.channelName }}, 'SQL_THREAD')" class="btn btn-danger btn-circle" title="Start SQL thread for this channel">
+                                    <div class="font-weight-bold small">SQL</div>
+                                </a>
+                            {% endif %}
                             <a href="#" class="btn btn-info btn-circle" data-toggle="modal" data-target="#slave-status-modal-{{ slave.channelName }}" title="Display complete slave status">
                                 <i class="fas fa-eye"></i>
                             </a>
