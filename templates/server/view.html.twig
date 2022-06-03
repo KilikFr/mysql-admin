@@ -107,6 +107,52 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-process-list shadow mb-4">
+            <div class="card-header py-3">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h6 class="m-0 font-weight-bold text-primary">{{ 'field.processList.label' | trans | capitalize }}
+                            <div class="processList-container-loader spinner-border spinner-border-sm text-primary" style="display: none;" role="status"></div>
+                        </h6>
+                    </div>
+                    <div class="col-md-2">
+                        <div style="float: right">
+                            <a href="javascript:refreshProcessList()" class="btn btn-primary btn-sm" title="Reload process list">
+                                <i class="fas fa-sync"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal : confirm process kill -->
+<div class="modal" id="confirmProcessKill" tabindex="-1" role="dialog" aria-labelledby="confirmProcessKillTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmProcessKillLongTitle">Confirm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modalBody"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'action.cancel' | trans | capitalize }}</button>
+                <a id="killProcess" type="button" class="btn btn-danger">{{ 'action.kill' | trans | capitalize }}</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block javascript %}
@@ -114,14 +160,17 @@
 {% if server.channels | length >= 1 %}
 <script type="text/javascript">
     const $replicationContainer = $('.card-replication');
+    const $processListContainer = $('.card-process-list');
 
     function displayLoader() {
         $replicationContainer.css('pointer-events', 'none');
+        $processListContainer.css('pointer-events', 'none');
         $('.replication-container-loader').show();
     }
 
     function hideLoader() {
         $replicationContainer.css('pointer-events', 'auto');
+        $processListContainer.css('pointer-events', 'auto');
         $('.replication-container-loader').hide();
     }
 
@@ -148,6 +197,7 @@
             url: "{{ path("server_slaves_start_ajax", { 'server': server.name }) }}",
             success: function () {
                 refreshSlavesStatus();
+                refreshProcessList();
                 $.notify("{{ 'message.startSlaves.success' | trans | capitalize }}", "success");
                 hideLoader();
             },
@@ -165,6 +215,7 @@
             url: "{{ path("server_slaves_stop_ajax", { 'server': server.name }) }}",
             success: function () {
                 refreshSlavesStatus();
+                refreshProcessList();
                 $.notify("{{ 'message.stopSlaves.success' | trans | capitalize }}", "success");
                 hideLoader();
             },
@@ -185,6 +236,7 @@
             thread: thread,
             success: function () {
                 refreshSlavesStatus();
+                refreshProcessList();
                 $.notify(("{{ 'message.startSlave.success' | trans | capitalize }}").replace('%thread%', this.thread ? this.thread.split('_')[0] : ''), "success");
                 hideLoader();
             },
@@ -205,6 +257,7 @@
             thread: thread,
             success: function () {
                 refreshSlavesStatus();
+                refreshProcessList();
                 $.notify(("{{ 'message.stopSlave.success' | trans | capitalize }}").replace('%thread%', this.thread ? this.thread.split('_')[0] : ''), "success");
                 hideLoader();
             },
@@ -231,6 +284,7 @@
                 $modal.modal('hide');
                 $modal.on('hidden.bs.modal', function () {
                     refreshSlavesStatus();
+                    refreshProcessList();
                     $.notify("{{ 'message.switchToNextMasterLogFile.success' | trans | capitalize }}", "success");
                 })
             },
@@ -247,9 +301,59 @@
         $.notify("{{ 'message.copyToClipboard.success' | trans | capitalize }}", "success");
     }
 
+    function refreshProcessList() {
+        displayLoader();
+        $.ajax({
+            type: 'get',
+            url: "{{ path("server_processlist_ajax", { 'server': server.name }) }}",
+            success: function (jsonResponse) {
+                $processListContainer.find('.card-body').html(jsonResponse.html);
+                hideLoader();
+            },
+            error: function () {
+                $.notify("{{ 'message.refreshProcessList.error' | trans | capitalize }}", "error");
+                hideLoader();
+            },
+        });
+    }
+
+    function killProcess(processId, killOption) {
+        displayLoader();
+        let url = "{{ path("server_kill_process_ajax", { 'server': server.name, 'processId': 'process_id', 'killOption': 'kill_option' }) }}";
+        url = url.replace("process_id", processId).replace("kill_option", killOption);
+        $.ajax({
+            type: 'get',
+            url: url,
+            processId: processId,
+            success: function () {
+                refreshProcessList();
+                refreshSlavesStatus();
+                $.notify("{{ 'message.killProcess.success' | trans | capitalize }}".replace('%processid%', processId), "success");
+                hideLoader();
+            },
+            error: function () {
+                $.notify("{{ 'message.killProcess.error' | trans | capitalize }}".replace('%processid%', processId), "error");
+                hideLoader();
+            },
+        });
+    }
+
     $(document).ready(function () {
         refreshSlavesStatus();
+        refreshProcessList();
+        $(document).on("click", ".js-kill-process", function (e) {
+            e.preventDefault();
+            const _self = $(this);
+            const $processId = _self.data('id');
+            const $killOption = _self.data('kill-option');
+            const confirmMessage = "{{ 'message.killProcessConfirmation' | trans | raw }}".replace('%processId%', $processId).replace('%killOption%', $killOption);
+            $('#confirmProcessKill #modalBody').html(confirmMessage);
+            const confirmHref = 'javascript:killProcess(' + $processId + ', \"' + $killOption + '\");$("#confirmProcessKill").modal("hide");';
+            $('#confirmProcessKill #killProcess').attr('href', confirmHref);
+            $(_self.attr('href')).modal('show');
+        });
     });
+
     {% endif %}
 </script>
 {% endblock %}

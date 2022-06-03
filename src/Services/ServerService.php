@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTO\Field;
 use App\DTO\MasterStatus;
+use App\DTO\ServerProcess;
 use App\DTO\Table;
 use App\Entity\Server;
 use Doctrine\ORM\EntityManager;
@@ -286,6 +287,57 @@ class ServerService
 
         $stmt = $connection->query(
             'STOP SLAVE',
+            \PDO::FETCH_ASSOC
+        );
+
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function showServerProcessList(Server $server): array
+    {
+        $processList = [];
+
+        $connection = $this->connectionService->getServerConnection($server);
+
+        $stmt = $connection->query(
+            'SHOW FULL PROCESSLIST',
+            \PDO::FETCH_ASSOC
+        );
+
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+
+        $rows = $stmt->fetchAll();
+
+        foreach ($rows as $row) {
+            $processList[] = ServerProcess::createFromRow($row);
+        }
+
+        return $processList;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function killProcess(Server $server, $processId, $killOption = ServerProcess::KILL_MODIFIER_CONNECTION): void
+    {
+        if (!in_array($killOption,ServerProcess::KILL_OPTIONS, true)) {
+            $message = sprintf('Unexpected modifier value (%s). Value should be one of : %s', $modifier, implode(', ', ServerProcess::KILL_OPTIONS));
+            throw new \UnexpectedValueException($message);
+        }
+
+        $connection = $this->connectionService->getServerConnection($server);
+
+        $stmt = $connection->query(
+            sprintf('KILL %s %s', $killOption, $processId),
             \PDO::FETCH_ASSOC
         );
 

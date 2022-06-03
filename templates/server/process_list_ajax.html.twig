@@ -1,0 +1,55 @@
+{% if serverProcessList is not empty %}
+    <table id="processList" class="table table-striped table-bordered table-hover table-sm">
+        <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Id</th>
+            <th scope="col">User</th>
+            <th scope="col">Host</th>
+            <th scope="col">Db</th>
+            <th scope="col">Command</th>
+            <th scope="col">Time</th>
+            <th scope="col">State</th>
+            <th scope="col">Info</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for process in serverProcessList %}
+            <tr>
+                <td class="align-middle">
+                    <a type="button" data-id="{{ process.id }}" data-kill-option="{{ constant('KILL_OPTION_CONNECTION', process) }}" class="js-kill-process btn btn-danger btn-sm text-sm" data-toggle="modal" data-target="#confirmProcessKill" title="Kill connection {{ process.id }}">
+                        <i class="fa fa-fw fa-ban fa-sm"></i> Conn.
+                    </a>
+                    <a type="button" data-id="{{ process.id }}" data-kill-option="{{ constant('KILL_OPTION_QUERY', process) }}" class="js-kill-process btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmProcessKill" title="Kill query {{ process.id }}">
+                        <i class="fa fa-fw fa-ban fa-sm"></i> Query
+                    </a>
+                </td>
+                <td class="align-middle">
+                    {{ process.id }}
+                </td>
+                <td class="align-middle">
+                    {{ process.user }}
+                </td>
+                <td class="align-middle">
+                    {{ process.host }}
+                </td>
+                <td class="align-middle">
+                    {{ process.db }}
+                </td>
+                <td class="align-middle">
+                    {{ process.command }}
+                </td>
+                <td class="align-middle">
+                    {{ process.time }}
+                </td>
+                <td class="align-middle">
+                    {{ process.state }}
+                </td>
+                <td class="align-middle">
+                    {{ process.info }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
