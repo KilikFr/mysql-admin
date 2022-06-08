@@ -43,3 +43,18 @@
 .dashboard-card a {
   text-decoration: none !important;
 }
+
+.process-query-modal .modal-dialog {
+  max-width: 50%;
+  min-width: 50%;
+}
+
+.process-query-modal .modal-body .query {
+  max-height: 50vh;
+  overflow: auto;
+}
+
+.process-query-modal .modal-body pre {
+  overflow: unset;
+  border: none;
+}
