@@ -21,6 +21,8 @@ field:
     label: host
   port:
     label: port
+  processList:
+    label: process list
   user:
     label: user
   password:
@@ -52,6 +54,7 @@ action:
   delete: delete
   edit: edit
   enterPassword: enter password
+  kill: kill
   save: save
   validate: validate
 
@@ -63,6 +66,10 @@ message:
     success: Cluster successfully saved
   copyToClipboard:
     success: Copy to clipboard
+  killProcess:
+    success: Process %processid% successfully killed
+    error: Error while killing process %processid%
+  killProcessConfirmation: 'Do you really want to run : <code>KILL %killOption% %processId%</code> ?'
   serverDeleteConfirmation: Are you sure to delete sever ?
   serverDelete:
     success: Server successfully deleted
@@ -85,6 +92,8 @@ message:
     error: Error while switching to next Master Log File
   refreshSlavesStatus:
     error: Error while resfreshing slaves status
+  refreshProcessList:
+    error: Error while resfreshing process list
 
 title:
   deleteConfirmDialog: Delete confirmation

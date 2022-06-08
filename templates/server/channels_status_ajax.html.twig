@@ -17,6 +17,7 @@
                             <div>Slave IO State : {% if slave.slaveIoState is not empty %}{{ slave.slaveIoState }}{% else %}-{% endif %}</div>
                             <div>Master Log File : {% if slave.masterLogFile is not empty %}{{ slave.masterLogFile }}{% else %}-{% endif %}</div>
                             <div>Master Log Pos : {% if slave.readMasterLogPos is not empty %}{{ slave.readMasterLogPos }}{% else %}-{% endif %}</div>
+                            <div>Seconds Behind Master : {% if slave.secondsBehindMaster is not empty %}{{ slave.secondsBehindMaster }} {% if slave.secondsBehindMaster > 0 %}({{ slave.secondsBehindMaster | format_duration }}){% endif %}{% else %}-{% endif %}</div>
                         </div>
                         <div class="col-md-4">
                             {% if slave.slaveIoRunning and slave.slaveSqlRunning %}

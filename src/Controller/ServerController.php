@@ -218,7 +218,7 @@ class ServerController extends AbstractController
      * @return array
      * @Template()
      */
-    public function view(Server $server, SlaveService $slaveService)
+    public function view(Server $server)
     {
         return [
             'server' => $server,
@@ -448,4 +448,58 @@ class ServerController extends AbstractController
 
         return new JsonResponse(null, Response::HTTP_OK);
     }
+
+    /**
+     * @Route("/{server}/processlist", name="server_processlist_ajax", methods={"GET"})
+     * @ParamConverter("server", options={"mapping": {"server" : "name"}})
+     *
+     * @return JsonResponse
+     */
+    public function processListRender(Server $server, ServerService $serverService): JsonResponse
+    {
+        try {
+            $serverProcessList = $serverService->showServerProcessList($server);
+        } catch (\Exception $e) {
+            $this->logger->error('Error while render process list', [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'exception' => $e->getMessage(),
+            ]);
+            return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new JsonResponse(
+            [
+                'html' => $this->render('server/process_list_ajax.html.twig', ['serverProcessList' => $serverProcessList])->getContent(),
+            ]
+        );
+    }
+
+    /**
+     * @Route("/{server}/process/{processId}/kill", name="server_kill_process_ajax", methods={"GET"})
+     * @ParamConverter("server", options={"mapping": {"server" : "name"}})
+     *
+     * @return JsonResponse
+     */
+    public function killProcess(Request $request, Server $server, int $processId, ServerService $serverService): JsonResponse
+    {
+        $killOption = $request->get('killOption');
+
+        try {
+            $serverService->killProcess($server, $processId, $killOption);
+        } catch (\Exception $e) {
+            $this->logger->error('Error while killing process '.$processId, [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'process_id' => $processId,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new JsonResponse(null, Response::HTTP_OK);
+    }
+
+
 }
