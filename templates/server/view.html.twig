@@ -226,10 +226,16 @@
         });
     }
 
-    function startSlaveForChannel(channel, thread = '') {
+    function startSlaveForChannel(channel, thread) {
         displayLoader();
-        let url = "{{ path("server_slave_channel_start_ajax", { 'server': server.name, 'channel': 'channel_name', 'thread': 'thread_name' }) }}";
-        url = url.replace("channel_name", channel).replace("thread_name", thread);
+        let url;
+        if (undefined === thread) {
+            url = "{{ path("server_slave_channel_start_ajax", { 'server': server.name, 'channel': 'channel_name' }) }}";
+            url = url.replace("channel_name", channel);
+        } else {
+            url = "{{ path("server_slave_channel_start_ajax", { 'server': server.name, 'channel': 'channel_name', 'thread': 'thread_name' }) }}";
+            url = url.replace("channel_name", channel).replace("thread_name", thread);
+        }
         $.ajax({
             type: 'get',
             url: url,
@@ -247,10 +253,16 @@
         });
     }
 
-    function stopSlaveForChannel(channel, thread = '') {
+    function stopSlaveForChannel(channel, thread) {
         displayLoader();
-        let url = "{{ path("server_slave_channel_stop_ajax", { 'server': server.name, 'channel': 'channel_name', 'thread': 'thread_name' }) }}";
-        url = url.replace("channel_name", channel).replace("thread_name", thread);
+        let url;
+        if (undefined === thread) {
+            url = "{{ path("server_slave_channel_stop_ajax", { 'server': server.name, 'channel': 'channel_name' }) }}";
+            url = url.replace("channel_name", channel);
+        } else {
+            url = "{{ path("server_slave_channel_stop_ajax", { 'server': server.name, 'channel': 'channel_name', 'thread': 'thread_name' }) }}";
+            url = url.replace("channel_name", channel).replace("thread_name", thread);
+        }
         $.ajax({
             type: 'get',
             url: url,
