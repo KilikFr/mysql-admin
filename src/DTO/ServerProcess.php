@@ -2,6 +2,8 @@
 
 namespace App\DTO;
 
+use Doctrine\SqlFormatter\SqlFormatter;
+
 class ServerProcess
 {
     public const KILL_OPTION_CONNECTION = 'CONNECTION';
@@ -20,6 +22,7 @@ class ServerProcess
     private ?int $time;
     private ?string $state;
     private ?string $info;
+    private ?string $rawInfo;
 
     /**
      * @param   int|null  $id
@@ -169,6 +172,7 @@ class ServerProcess
     public function setInfo(?string $info): self
     {
         $this->info = $info;
+        $this->rawInfo = !empty($info) ? (new SqlFormatter())->format($info) : null;
 
         return $this;
     }
@@ -179,6 +183,14 @@ class ServerProcess
     public function getInfo(): ?string
     {
         return $this->info;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRawInfo(): ?string
+    {
+        return $this->rawInfo;
     }
 
     public function setFromRow(array $row): void

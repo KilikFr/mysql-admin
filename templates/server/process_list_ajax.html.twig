@@ -45,8 +45,17 @@
                 <td class="align-middle">
                     {{ process.state }}
                 </td>
-                <td class="align-middle">
-                    {{ process.info }}
+                <td class="align-middle" style="max-width: 300px;">
+                    {% if process.info is not empty %}
+                        <a href="#" data-toggle="modal" data-target="#process-query-modal-{{ process.id }}">
+                            {% if process.info | length > 100 %}
+                                {{ process.info | slice(0, 100) }} ...
+                            {% else %}
+                                {{ process.info }}
+                            {% endif %}
+                        </a>
+                        {% include "server/process_query_modal.html.twig" with {'process': process} %}
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

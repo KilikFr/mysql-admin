@@ -1,0 +1,29 @@
+<div class="process-query-modal modal fade" id="process-query-modal-{{ process.id }}" tabindex="-1" role="dialog" aria-labelledby="process-query-modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Executed query</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="query-{{ process.id }}">{{ process.rawInfo | raw }}</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline btn-info btn-copy-{{ process.id }}">
+                    <i class="fa fa-copy"></i> {{ "action.copy" | trans | capitalize }}
+                </button>
+                <button class="btn btn-outline btn-warning" type="button" data-dismiss="modal">{{ 'action.close' | trans | capitalize }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".btn-copy-{{ process.id }}").click(function () {
+            navigator.clipboard.writeText("{{ process.info }}");
+        });
+    });
+</script>
