@@ -218,10 +218,21 @@ class ServerController extends AbstractController
      * @return array
      * @Template()
      */
-    public function view(Server $server)
+    public function view(Server $server, ServerService $serverService)
     {
+        try {
+            $serverUptime = $serverService->getServerUptime($server);
+        } catch (\Throwable $e) {
+            $this->logger->error('Error while fetching uptime', [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'exception' => $e->getMessage(),
+            ]);
+        }
+
         return [
             'server' => $server,
+            'serverUptime' => $serverUptime ?? null
         ];
     }
 

@@ -3,42 +3,155 @@
 {% set subSection = 'clusters' %}
 
 {% block pageContent %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">{{ 'field.cluster.label' | trans | capitalize }} {{ cluster.name }}</h6>
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">{{ 'field.cluster.label' | trans | capitalize }} {{ cluster.name }}</h1>
+    </div>
+    <div class="row">
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-sm-6 col-md-4 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <span class="text-primary" style="font-size: 32px">{{ cluster.servers | length }}</span>
+                            <span class="text-gray-800" style="font-size: 24px">
+                                {% if cluster.servers | length < 2 %}
+                                {{ 'field.server.label' | trans | capitalize }}
+                                {% else %}
+                                {{ 'field.server.labels' | trans | capitalize }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-desktop fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-sm-1"><b>{{ "field.server.labels" | trans | capitalize }} :</b></div>
-                        <div class="col-sm-11">
-                        {% if cluster.servers is not empty %}
-                            <ul>
-                            {% for server in cluster.servers %}
-                                <li>
-                                    <a href="{{ path("server_view", {"server": server.name }) }}">
-                                        {{ server.name }}
-                                    </a>
-                                </li>
-                            {% endfor %}
-                            </ul>
-                        {% else %}
-                            {{ 'word.none' | trans | capitalize }}
-                        {% endif %}
+        </div>
+        <div class="col-sm-6 col-md-4 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2 flex">
+                                <div><span class="text-gray-800" style="font-size: 24px">Slave IO Running</span></div>
+                                {% if nbSlaves == 0 %}
+                                    No replication
+                                {% else %}
+                                <div style="display: flex; flex-direction: row;">
+                                    {% set advancement = nbSlavesIORunning / nbSlaves * 100 %}
+                                    <div class="progress mt-1" style="width: 85%">
+                                        <div class="progress-bar {% if advancement < 100 %}bg-danger{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ advancement }}%" aria-valuenow="{{ advancement }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div style="margin: 0 15px;"><span>{{ nbSlavesIORunning }}&nbsp;/&nbsp;{{ nbSlaves }}</span></div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2 flex">
+                                <div><span class="text-gray-800" style="font-size: 24px">Slave SQL Running</span></div>
+                                {% if nbSlaves == 0 %}
+                                    No replication
+                                {% else %}
+                                <div style="display: flex; flex-direction: row;">
+                                    {% set advancement = nbSlaveSQLRunning / nbSlaves * 100 %}
+                                    <div class="progress mt-1" style="width: 85%">
+                                        <div class="progress-bar {% if advancement < 100 %}bg-danger{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ advancement }}%" aria-valuenow="{{ advancement }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div style="margin: 0 15px;"><span>{{ nbSlaveSQLRunning }}&nbsp;/&nbsp;{{ nbSlaves }}</span></div>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h5 class="m-0 font-weight-bold text-primary">
+            {{ 'field.server.list' | trans | capitalize }}
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                {% if cluster.servers is not empty %}
+                    {% for server in cluster.servers %}
+                        {% set summary = [] %}
+                        {% if serversSummary[server.name] is defined and serversSummary[server.name] is not empty %}
+                        {% set summary = serversSummary[server.name] %}
+                        {% endif %}
+                        <div style="display: flex">
+                            <h5 class="mb-3 font-weight-bold text-primary">
+                                <a href="{{ path("server_view", {"server": server.name }) }}">
+                                    <i class="fas fa-desktop text-gray-600"></i> {{ server.name }}
+                                </a>
+                            </h5>
+                            {% if summary['uptime'] is defined and summary['uptime'] is not null %}
+                            <span>
+                                &nbsp;-
+                                <i class="fa fa-info-circle text-info"></i>&nbsp;{{ 'field.upSince.label' | trans | capitalize }}
+                                {{ serversSummary[server.name]['uptime'] | date('d/m/Y H:i:s') }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div style="display: flex; flex-direction: row; flex-wrap: wrap;" class="mb-3">
+                            {% if summary['slaveStatuses'] is defined and summary['slaveStatuses'] is not empty %}
+                                {% for slave in summary['slaveStatuses'] %}
+                                    {% set isInError = not slave.slaveIoRunning or not slave.slaveSqlRunning %}
+                                    {% set borderLeftColor = '' %}
+                                    {% if isInError %}
+                                        {% set borderLeftColor = 'border-left-danger' %}
+                                    {% endif %}
+                                    <div class="card shadow {{ borderLeftColor }}  mb-4 mr-4" style="min-width: 500px">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                {% if isInError %}
+                                                    <div class="col-md-1" style="display: flex; align-self: center;">
+                                                        <i class="fa fa-2x fa-info-circle text-danger"></i>
+                                                    </div>
+                                                {% endif %}
+                                                <div class="ml-4">
+                                                    <b><i class="fa fa-exchange-alt"></i>
+                                                        {{ 'field.channel.label' | trans | capitalize }} {{ slave.channelName }}</b>
+                                                    <div>Master : {{ slave.masterHost }}</div>
+                                                    <div>Slave IO Running : {% if slave.slaveIoRunning %}<i
+                                                                class="fa fa-check text-success"></i>{% else %}<i
+                                                                class="fa fa-times text-danger"></i>{% endif %}
+                                                    </div>
+                                                    <div>Slave SQL Running : {% if slave.slaveSqlRunning %}<i
+                                                                class="fa fa-check text-success"></i>{% else %}<i
+                                                                class="fa fa-times text-danger">{% endif %}</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {{ 'word.none' | trans | capitalize }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
-
-<a href="{{ path("cluster_list") }}" class="btn btn-outline btn-warning">
-    <i class="fa fa-arrow-left"></i> {{ "action.back" | trans | capitalize }}
-</a>
-<a href="{{ path("cluster_edit", {"cluster": cluster.name }) }}" class="btn btn-outline btn-info">
-    <i class="fa fa-edit"></i> {{ "action.edit" | trans | capitalize }}
-</a>
+    <a href="{{ path("cluster_list") }}" class="btn btn-outline btn-warning">
+        <i class="fa fa-arrow-left"></i> {{ "action.back" | trans | capitalize }}
+    </a>
+    <a href="{{ path("cluster_edit", {"cluster": cluster.name }) }}" class="btn btn-outline btn-info">
+        <i class="fa fa-edit"></i> {{ "action.edit" | trans | capitalize }}
+    </a>
+    <br/>
+    <br/>
 {% endblock %}

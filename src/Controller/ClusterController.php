@@ -4,10 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Cluster;
 use App\Form\ClusterType;
+use App\Services\ServerService;
+use App\Services\SlaveService;
 use Kilik\TableBundle\Components\Column;
 use Kilik\TableBundle\Components\Filter;
 use Kilik\TableBundle\Components\Table;
 use Kilik\TableBundle\Services\TableService;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,10 +25,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ClusterController extends AbstractController
 {
     private TranslatorInterface $translator;
+    private LoggerInterface $logger;
 
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(TranslatorInterface $translator, LoggerInterface $logger)
     {
         $this->translator = $translator;
+        $this->logger = $logger;
     }
 
     private function getTable()
@@ -150,10 +155,55 @@ class ClusterController extends AbstractController
      * @return array
      * @Template()
      */
-    public function view(Cluster $cluster)
+    public function view(Cluster $cluster, SlaveService $slaveService, ServerService $serverService)
     {
+        $serversSummary = [];
+        $nbSlaves = 0;
+        $nbSlavesIORunning = 0;
+        $nbSlaveSQLRunning = 0;
+        foreach ($cluster->getServers() as $server) {
+            $slaveStatuses = [];
+            $serverUptime = null;
+            try {
+                $slaveStatuses = $slaveService->showSlaveStatus($server);
+            } catch (\Throwable $e) {
+                $this->logger->error('Error while fetching slaves status', [
+                    'server_id' => $server->getId(),
+                    'server_name' => $server->getName(),
+                    'exception' => $e->getMessage(),
+                ]);
+            }
+            try {
+                $serverUptime = $serverService->getServerUptime($server);
+            } catch (\Throwable $e) {
+                $this->logger->error('Error while fetching uptime', [
+                    'server_id' => $server->getId(),
+                    'server_name' => $server->getName(),
+                    'exception' => $e->getMessage(),
+                ]);
+            }
+
+            $serversSummary[$server->getName()] = [
+                'slaveStatuses' => $slaveStatuses,
+                'uptime' => $serverUptime,
+            ];
+            $nbSlaves += count($slaveStatuses);
+            foreach ($slaveStatuses as $slaveStatus) {
+                if ($slaveStatus->getSlaveIoRunning()) {
+                    $nbSlavesIORunning++;
+                }
+                if ($slaveStatus->getSlaveSqlRunning()) {
+                    $nbSlaveSQLRunning++;
+                }
+            }
+        }
+
         return [
             'cluster' => $cluster,
+            'serversSummary' => $serversSummary,
+            'nbSlaves' => $nbSlaves,
+            'nbSlavesIORunning' => $nbSlavesIORunning,
+            'nbSlaveSQLRunning' => $nbSlaveSQLRunning,
         ];
     }
 

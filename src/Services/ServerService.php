@@ -299,6 +299,28 @@ class ServerService
     /**
      * @throws \Exception
      */
+    public function getServerUptime(Server $server): \DateTime
+    {
+        $connection = $this->connectionService->getServerConnection($server);
+
+        $stmt = $connection->query(
+            "SELECT NOW() - INTERVAL VARIABLE_VALUE SECOND AS 'upSince'
+                    FROM performance_schema.session_status
+                    WHERE VARIABLE_NAME = 'Uptime'",
+            \PDO::FETCH_ASSOC
+        );
+
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+
+        return new \DateTime($stmt->fetchColumn(0));
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function showServerProcessList(Server $server): array
     {
         $processList = [];
