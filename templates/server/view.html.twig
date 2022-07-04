@@ -48,6 +48,18 @@
                 </div>
                 <div class="form-group">
                     <div class="row">
+                        <div class="col-sm-4"><b>{{ "field.upSince.label" | trans | capitalize }} :</b></div>
+                        <div class="col-sm-8">
+                            {% if serverUptime is not null %}
+                                {{ serverUptime | date('d/m/Y H:i:s') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
                         <div class="col-sm-4"><b>{{ "field.createdAt.label" | trans | capitalize }} :</b></div>
                         <div class="col-sm-8">{{ server.createdAt | date('d/m/Y H:i:s') }}</div>
                     </div>

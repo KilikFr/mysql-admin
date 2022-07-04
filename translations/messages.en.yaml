@@ -32,11 +32,14 @@ field:
   server:
     label: server
     labels: servers
+    list: server list
   slave:
     label: slave
     labels: slaves
   updatedAt:
     label: updated at
+  upSince:
+    label: up since
 
 word:
   actions: actions
