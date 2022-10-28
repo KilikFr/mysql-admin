@@ -2,6 +2,7 @@
 
 namespace App\Twig;
 
+use Doctrine\SqlFormatter\SqlFormatter;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
@@ -11,6 +12,8 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFilter('format_duration', [$this, 'formatDuration']),
+            new TwigFilter('format_sql', [$this, 'formatSQL']),
+            new TwigFilter('highlight_sql', [$this, 'highlightSQL']),
         ];
     }
 
@@ -20,5 +23,14 @@ class AppExtension extends AbstractExtension
         $timeTo = new \DateTime("@$seconds");
 
         return $timeFrom->diff($timeTo)->format('%a days %h hours %i minutes %s seconds');
+    }
+
+    public function formatSQL(string $query): string
+    {
+        return (new SqlFormatter())->format($query);
+    }
+    public function highlightSQL(string $query): string
+    {
+        return (new SqlFormatter())->highlight($query);
     }
 }

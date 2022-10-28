@@ -163,7 +163,7 @@ class SlaveService
         }
     }
 
-    public function switchToNextMasterLogFile($slave, int $channel, string $nextMasterLogFile)
+    public function switchToNextMasterLogFile(Slave $slave, int $channel, string $nextMasterLogFile)
     {
         $connection = $this->connectionService->getServerConnection($slave->getServer());
 
@@ -171,6 +171,40 @@ class SlaveService
             sprintf("STOP SLAVE FOR CHANNEL '%s'; CHANGE MASTER TO MASTER_LOG_FILE='%s', MASTER_LOG_POS=0 FOR CHANNEL '%s'; START SLAVE FOR CHANNEL '%s';",
                 $channel,
                 $nextMasterLogFile,
+                $channel,
+                $channel
+            )
+        );
+
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+    }
+
+    public function getLastTransactionError(Slave $slave, int $channel): ?string
+    {
+        $connection = $this->connectionService->getServerConnection($slave->getServer());
+
+        $stmt = $connection->query(
+            sprintf("SELECT LAST_ERROR_MESSAGE FROM performance_schema.replication_applier_status_by_worker WHERE CHANNEL_NAME='%s';", $channel)
+        );
+
+        if (false === $stmt) {
+            $message = sprintf('error (%s): %s', $connection->errorCode(), $connection->errorInfo()[2]);
+            throw new \Exception($message);
+        }
+
+        return $stmt->fetch()['LAST_ERROR_MESSAGE'] ?: null;
+    }
+
+    public function skipTransaction($slave, int $channel)
+    {
+        $connection = $this->connectionService->getServerConnection($slave->getServer());
+
+        $stmt = $connection->exec(
+            sprintf("STOP SLAVE FOR CHANNEL '%s'; SELECT @gtid := (SELECT LAST_SEEN_TRANSACTION FROM performance_schema.replication_applier_status_by_worker WHERE CHANNEL_NAME='%s'); SET @@SESSION.GTID_NEXT=@gtid; BEGIN; COMMIT; SET @@SESSION.GTID_NEXT='AUTOMATIC'; START SLAVE FOR CHANNEL '%s';",
+                $channel,
                 $channel,
                 $channel
             )

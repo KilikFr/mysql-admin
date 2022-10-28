@@ -50,8 +50,11 @@
                             <a href="#" class="btn btn-info btn-circle" data-toggle="modal" data-target="#slave-status-modal-{{ slave.channelName }}" title="Display complete slave status">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="#" class="btn btn-primary btn-circle" data-toggle="modal" data-target="#switch-next-master-log-file-modal-{{ slave.channelName }}" title="Switch to next position">
-                                <i class="fas fa-forward"></i>
+                            <a href="#" class="btn btn-primary btn-circle" data-toggle="modal" data-target="#skip-transaction-modal-{{ slave.channelName }}" title="Skip transaction">
+                                <i class="fas fa-step-forward"></i>
+                            </a>
+                            <a href="#" class="btn btn-primary btn-circle" data-toggle="modal" data-target="#switch-next-master-log-file-modal-{{ slave.channelName }}" title="Switch to next file">
+                                <i class="fas fa-fast-forward"></i>
                             </a>
                         </div>
                     </div>
@@ -101,15 +104,40 @@
                         <div class="modal-body">
                             {% set next = (slave.masterLogFile | replace({'mysql-bin.': ""}) + 1) | format_number({min_integer_digit:'6', grouping_used:''}) %}
                             {% set nextMasterLogFile = 'mysql-bin.'~next %}
-                            <pre>
-STOP SLAVE FOR CHANNEL '{{ slave.channelName }}';
-CHANGE MASTER TO MASTER_LOG_FILE='{{ nextMasterLogFile }}', MASTER_LOG_POS=0 FOR CHANNEL '{{ slave.channelName }}';
-START SLAVE FOR CHANNEL '{{ slave.channelName }}';
-                            </pre>
+{{ "STOP SLAVE FOR CHANNEL '#{ slave.channelName }';" | highlight_sql | raw }}
+{{ "CHANGE MASTER TO MASTER_LOG_FILE='#{ nextMasterLogFile }', MASTER_LOG_POS=0 FOR CHANNEL '#{ slave.channelName }';" | highlight_sql | raw }}
+{{ "START SLAVE FOR CHANNEL '#{ slave.channelName }';" | highlight_sql | raw }}
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-outline btn-warning" type="button" data-dismiss="modal">{{ 'action.close' | trans | capitalize }}</button>
                             <button type="button" onclick="switchNextMasterLogFile({{ slave.channelName }}, '{{ nextMasterLogFile }}')" class="btn btn-outline btn-success btn-switch-next-master-log-file" data-loading-text="LOADING..." id="btn-switch-next-master-log-file-{{ slave.channelName }}">
+                                <i class="fa fa-check"></i> {{ "action.validate" | trans | capitalize }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="skip-transaction-modal-{{ slave.channelName }}" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">La requête suivante va être executée</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+{{ "STOP SLAVE FOR CHANNEL '#{ slave.channelName }';" | highlight_sql | raw }}
+{{ "SELECT @gtid := (SELECT LAST_SEEN_TRANSACTION FROM performance_schema.replication_applier_status_by_worker WHERE CHANNEL_NAME='#{ slave.channelName }');" | format_sql | raw }}
+{{ "SET @@SESSION.GTID_NEXT=@gtid;" | highlight_sql | raw }}
+{{ "BEGIN;
+COMMIT;" | highlight_sql | raw }}
+{{ "SET @@SESSION.GTID_NEXT='AUTOMATIC';" | highlight_sql | raw }}
+{{ "START SLAVE FOR CHANNEL '#{ slave.channelName }';" | highlight_sql | raw }}
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-outline btn-warning" type="button" data-dismiss="modal">{{ 'action.close' | trans | capitalize }}</button>
+                            <button type="button" onclick="skipTransaction({{ slave.channelName }})" class="btn btn-outline btn-success btn-skip-transaction" data-loading-text="LOADING..." id="btn-skip-transaction-{{ slave.channelName }}">
                                 <i class="fa fa-check"></i> {{ "action.validate" | trans | capitalize }}
                             </button>
                         </div>

@@ -461,6 +461,46 @@ class ServerController extends AbstractController
     }
 
     /**
+     * @Route("/{server}/slave/channel/{channel}/skip-transaction", name="server_slave_channel_skip_transaction_ajax", methods={"POST"})
+     * @ParamConverter("server", options={"mapping": {"server" : "name"}})
+     *
+     * @return JsonResponse
+     */
+    public function skiptransactionForChannel(Server $server, int $channel, SlaveService $slaveService): JsonResponse
+    {
+        $slave = $this->getDoctrine()->getRepository(Slave::class)->findOneBy(
+            ['server' => $server, 'channelName' => $channel]
+        );
+
+        if ($slave === null) {
+            $this->logger->error('slave for server '.$server->getName().' and channel '.$channel.' not found', [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'channel' => $channel,
+            ]);
+            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            if (null === $slaveService->getLastTransactionError($slave, $channel)) {
+                return new JsonResponse(['message' => 'No error detected, aborting skip'], Response::HTTP_OK);
+            }
+            $slaveService->skipTransaction($slave, $channel);
+
+            return new JsonResponse(['message' => 'Transaction skipped'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $this->logger->error('Error while skipping transaction file for channel '.$channel, [
+                'server_id' => $server->getId(),
+                'server_name' => $server->getName(),
+                'channel' => $channel,
+                'next_position' => 0,
+                'exception' => $e->getMessage(),
+            ]);
+            return new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * @Route("/{server}/processlist", name="server_processlist_ajax", methods={"GET"})
      * @ParamConverter("server", options={"mapping": {"server" : "name"}})
      *

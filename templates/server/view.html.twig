@@ -320,6 +320,31 @@
         });
     }
 
+    function skipTransaction(channel) {
+        $('#btn-skip-transaction-' + channel).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>In execution...').attr('disabled', true);
+
+        let url = "{{ path("server_slave_channel_skip_transaction_ajax", { 'server': server.name, 'channel': 'channel_name' }) }}";
+        url = url.replace("channel_name", channel);
+        $.ajax({
+            type: 'post',
+            url: url,
+            success: function (data) {
+                const $modal = $('#skip-transaction-modal-' + channel);
+                $modal.modal('hide');
+                $modal.on('hidden.bs.modal', function () {
+                    refreshSlavesStatus();
+                    refreshProcessList();
+                    $.notify(data.message, "success");
+                })
+            },
+            error: function () {
+                const $modal = $('#skip-transaction-modal-' + channel);
+                $modal.modal('hide');
+                $.notify("{{ 'message.skipTransaction.error' | trans | capitalize }}", "error");
+            },
+        });
+    }
+
     function copyChannelStatusToClipboard(channel) {
         navigator.clipboard.writeText($('#slave-status-modal-' + channel).find('.modal-body').text());
         $.notify("{{ 'message.copyToClipboard.success' | trans | capitalize }}", "success");
