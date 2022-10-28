@@ -90,6 +90,8 @@ message:
   stopSlaves:
     success: Slaves successfully stopped
     error: Error while stopping slaves
+  skipTransaction:
+    error: Error while skipping transaction
   switchToNextMasterLogFile:
     success: Master Log File successfully switched to next file
     error: Error while switching to next Master Log File
